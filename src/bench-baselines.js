@@ -1,5 +1,5 @@
-// Scores the non-LLM baselines against the corpus. No model, no GPU, no
-// browser — runs in node so "is the LLM worth it?" can be re-checked cheaply
+// Scores the non-model baselines against the corpus. No model, no GPU, no
+// browser — runs in node so "is the model worth it?" can be re-checked cheaply
 // whenever the corpus grows.
 //
 //   npm run bench:baselines
@@ -56,8 +56,5 @@ for (const { name, score } of rows) {
   }
 }
 
-console.log("\nfor comparison, measured in test/bench-prompts.html:");
-console.log(" 12/12 correct  false-hide=0  false-pass=0  penalty= 0  shipped pipeline (junk rules + Llama 3.2 1B)");
-
 const best = rows.slice().sort((a, b) => penalty(a.score) - penalty(b.score))[0];
-console.log(`\nbest non-LLM baseline: ${best.name} (penalty ${best.score.penalty})`);
+console.log(`\nbest non-model baseline: ${best.name} (penalty ${best.score.penalty})`);

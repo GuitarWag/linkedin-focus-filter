@@ -1,6 +1,5 @@
 // Shared eval corpus: real posts from the feed plus a few clear-cut cases,
 // each labelled with the verdict a human would want for these interests.
-export const MODEL_ID = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
 export const INTERESTS = "software engineer, ai, sql, cloud";
 
 export const POSTS = [

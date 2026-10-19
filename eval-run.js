@@ -1,7 +1,7 @@
 // Runs test/eval.html in a real Chromium (WebGPU) via agent-browser and prints
 // the results. Uses its own browser session, not your everyday one.
 //   npm run eval                       # all backends
-//   npm run eval -- llama              # just one (comma-separated list)
+//   npm run eval -- kev                # just one (comma-separated list)
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -11,7 +11,7 @@ const execFile = promisify(require("child_process").execFile);
 const ROOT = path.join(__dirname, "test");
 const PORT = Number(process.env.EVAL_PORT || 8790);
 const TIMEOUT_MS = Number(process.env.EVAL_TIMEOUT_MS || 20 * 60 * 1000);
-const backends = process.argv[2] || "llama,kev,laya";
+const backends = process.argv[2] || "kev,laya";
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".json": "application/json", ".wasm": "application/wasm" };
 
 const server = http

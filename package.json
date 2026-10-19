@@ -13,13 +13,12 @@
   "author": "Wagner Silva",
   "type": "commonjs",
   "dependencies": {
-    "@mlc-ai/web-llm": "0.2.84",
-    "esbuild": "0.28.2"
+    "@huggingface/transformers": "4.3.1",
+    "open-jev": "0.1.2"
   },
   "devDependencies": {
-    "@huggingface/transformers": "4.3.1",
-    "jsdom": "29.1.1",
-    "open-jev": "0.1.2"
+    "esbuild": "0.28.2",
+    "jsdom": "29.1.1"
   },
   "private": true,
   "license": "MIT"
