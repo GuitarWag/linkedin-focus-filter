@@ -35,6 +35,10 @@ const RULES = [
     name: "award-announcement",
     re: /\b(thrilled|humbled|honou?red|proud|delighted) to (?:share|announce)\b[\s\S]{0,160}?\b(award|awards|recognition|recognised|recognized|certified|great place to work|top employer|anniversary)\b/i,
   },
+  // LinkedIn's "Recommended for you" people widget renders as a post card: a
+  // run of names each followed by a Follow button. Its text nodes concatenate
+  // without spaces ("youRyan", "connectionFollowMartin"), so no \b here.
+  { name: "people-widget", re: /Recommended for you[\s\S]{0,300}Follow[\s\S]{0,300}Follow/, window: 700 },
   {
     name: "course-promo",
     re: /\b(limited seats|enroll now|click here to learn more|link in (?:the )?(?:bio|comments) to (?:join|enroll))\b/i,

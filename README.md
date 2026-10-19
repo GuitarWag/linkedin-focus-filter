@@ -12,22 +12,25 @@ extension.
   Kept free of extension and model concerns so it can be tested.
 - `src/junk-filter.js` — high-precision patterns for hiring ads, award posts and
   engagement bait. Matching hides the post with no model call at all.
-- `src/decision.js` — the question asked per post: a choice over your topics
-  plus "something else". Picking "something else" hides the post.
+- `src/decision.js` — the questions asked per post, answered in one forward
+  pass: a choice over your topics plus "something else", your avoid topics, and
+  what kind of post it is. A topic match only counts when the post is an
+  explanation or a release, so a story that name-drops a tool stays hidden.
+  Post text is NFKC-normalised first, because styled Unicode letters
+  (𝗦𝗼𝗻𝗻𝗲𝘁) tokenize as garbage.
 - `src/offscreen.js` — hosts the model in an offscreen document.
 - `src/popup.*` — mode switch (off / smart filter / block feed), status, stats.
 - `src/log.*` — activity log with the full trace per post and summary graphs.
 
 Model: Kev 0.6B (`onnx-community/kev-0.6b-ONNX`, q4f16, ~330 MB), a decision
 model run with open-jev and Transformers.js on WebGPU. One forward pass returns
-a probability per option; nothing is generated. Llama 3.2 1B stays in
-`assets/models` only as an eval baseline.
+a probability per option; nothing is generated.
 
 ## Setup
 
 ```sh
 npm install
-node fetch-model.js     # Kev (~330 MB, shipped) and Llama (~677 MB, eval only)
+node fetch-model.js     # Kev (~330 MB)
 npm run build           # bundles into dist/
 ```
 
@@ -71,13 +74,12 @@ Model behaviour is measured, not guessed. The eval runs the shipped pipeline
 with WebGPU, via agent-browser in its own session, not your everyday browser.
 
 ```sh
-npm run eval              # llama, kev and laya
+npm run eval              # kev and laya
 npm run eval -- kev       # one backend (comma-separated list for several)
 ```
 
 | Backend | Model | Size | How it decides |
 |---|---|---|---|
-| `llama` | Llama-3.2-1B-Instruct q4f16 (WebLLM) | ~677 MB | Generates YES/NO from a prompt. The old Safari setup, kept as a baseline. |
 | `kev` | Kev-0.6B q4f16 (open-jev), **shipped** | ~330 MB | Decision model (Qwen3-0.6B base): one forward pass, a probability per option. |
 | `laya` | Laya typed-decisions fp16 (`src/laya.js`) | ~850 MB | Decision model (ModernBERT-large): one pass per question. |
 
@@ -95,40 +97,55 @@ false-hide double. Rank variants by penalty, not raw accuracy.
 
 ### Current results
 
-Measured 2026-10-18. The 50 real posts were labelled against "ai engineer,
+Measured 2026-10-19. The 50 real posts were labelled against "ai engineer,
 software engineer, SDLC." with "politics, war" to avoid. The described-interest
 rows use the same intent written as four `topic: description` lines (see
-`DESCRIBED_INTERESTS` in `src/eval.js`).
+`DESCRIBED_INTERESTS` in `src/eval.js`). Every row includes the text
+normalisation and the people-widget junk rule.
 
 50 real feed posts:
 
 | Variant | Correct | False-hide | False-pass | Penalty | ms/call |
 |---|---|---|---|---|---|
-| **kev: described interests + described "something else" (shipped default)** | 36/50 | 1 | 13 | 15 | 149 |
-| kev: described interests, plain "something else" | 40/50 | 6 | 4 | 16 | 135 |
-| kev: role-word interests + described "something else" | 26/50 | 5 | 19 | 29 | 111 |
-| kev: role-word interests, plain options (first Kev release) | 25/50 | 7 | 18 | 32 | 97 |
-| laya: best variant (technical-depth wording + decoys) | 26/50 | 0 | 24 | 24 | 232 |
-| llama-1b: shipped Safari prompt | 24/50 | 2 | 24 | 28 | 163 |
+| **kev: described interests, state prefix, kind-of-post gate (shipped default)** | 43/50 | 1 | 6 | 8 | 207 |
+| kev: same, but gate options without descriptions | 42/50 | 1 | 7 | 9 | 177 |
+| kev: same, "judge the body" prefix | 45/50 | 3 | 2 | 8 | 242 |
+| kev: described interests, state prefix, no gate | 38/50 | 1 | 11 | 13 | 145 |
+| kev: described interests, no prefix, no gate (previous release) | 37/50 | 1 | 12 | 14 | 144 |
+| kev: shipped default with role-word interests | 37/50 | 3 | 10 | 16 | 180 |
+| laya: best variant | 25/50 | 0 | 25 | 25 | 236 |
 
-20 built-in cases: kev with the shipped default scores 20/20, laya 19/20 at
-best, llama 18/20. The built-in set no longer separates the variants; the real
-posts do.
+For reference, the generative Llama-3.2-1B setup this replaced scored 24/50
+(2 false-hides, 24 false-passes, penalty 28, 163 ms/call).
+
+20 built-in cases: kev with the shipped default scores 20/20. The "judge the
+body" prefix hides a built-in Big-O post, which is why it does not ship despite
+the higher raw accuracy. Laya tops out at 18/20.
 
 What the numbers say:
 
-- Interests written as role words ("software engineer") are the biggest
-  problem: Kev files Kubernetes, GPU-serving and benchmark posts under
-  "something else". Describing each topic fixes most false-hides.
-- The remaining false-passes are fluff that mentions a role or a tool ("my
-  band's site made with Claude", "meet our lead engineer", a thumbnail-tool ad).
-- The avoid question caught all 3 politics and war posts with Kev. Laya picks an
-  avoid topic at low confidence on unrelated posts, so its variants gate that
-  answer at 0.6, and then it lets almost everything through.
-- Confidence thresholds on YES cost more false-hides than they save.
+- The kind-of-post gate is the biggest single gain (penalty 13 to 8). It
+  catches the stories and the hiring posts that match a topic by vocabulary.
+- NFKC normalisation fixed the two wanted posts written in Unicode bold
+  (a Terminal-Bench result and a model pricing post); before it they counted as
+  false-hides in every variant.
+- Interests written as role words ("software engineer") still cost the most:
+  the same model with the same gate drops from penalty 8 to 16.
+- What is left: one wanted post Kev files under "something else" in every
+  variant (a vector-database explainer), two Portuguese and one Turkish
+  post Kev cannot read (the models are English-only), a thumbnail-tool ad it
+  calls a product release, and two stories it calls technical. Question
+  wording did not move these; a larger model (`kev-4b`, 2.3 GB) is the next
+  lever.
+- Measured and dropped: yes/no "this post has technical substance" statements
+  (Kev agrees with almost every post), a four-level substance score (hides
+  wanted posts), an "is English" statement (no change), keeping opinions in
+  the gate (no change), a sharper "something else" description (no change),
+  and confidence thresholds on YES (false-hides).
 
 Promoted posts never reach the model: the header rule caught 40 of 42 ads in
-the logs, and the 2 misses ("Promoted by <company>") are matched now.
+the logs, and the 2 misses ("Promoted by <company>") are matched now. The
+"Recommended for you" people widget, which renders as a post, is a junk rule too.
 
 ### Growing the eval set from real use
 
@@ -144,17 +161,3 @@ tell them apart. Feed it real posts:
 
 The file contains other people's post text from your feed. It's gitignored;
 keep it local.
-
-### Older single-purpose benchmarks
-
-These measure the Llama baseline. Serve `test/`, then open:
-
-- `bench-prompts.html` — prompt strategies on accuracy and latency.
-- `bench.html` — input caps and token budgets.
-- `bench-overhead.html` — fixed vs per-token cost of a call (~57 ms per call
-  plus ~0.13 ms per character).
-- `index.html` — classify a single pasted post end to end.
-
-Findings from the Llama era that still hold for prompt wording: asking for the
-verdict and a reason in one call cost 5 false-hides out of 12, and telling the
-model what to exclude made it reject genuine technical content.

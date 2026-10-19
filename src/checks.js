@@ -2,7 +2,7 @@
 // browser via test/checks.html (which also exercises the layout assertions
 // jsdom can't model). Covers the feed DOM surgery, the mode-switch
 // round-trips that used to leave the feed hidden or stack up block overlays,
-// the junk pre-filter's safety property, and verdict parsing.
+// the junk pre-filter's safety property, and the eval scoring.
 import {
   blockFeed,
   clearProcessedMarkers,
@@ -13,9 +13,8 @@ import {
   revealPost,
   unblockFeed,
 } from "./dom-ops.js";
-import { DEFAULT_OPTIONS, buildQuestions, judge, topics } from "./decision.js";
+import { DEFAULT_OPTIONS, KIND_GATE, buildQuestions, cleanText, judge, topics } from "./decision.js";
 import { matchJunkRule } from "./junk-filter.js";
-import { parseVerdict } from "./verdict.js";
 import { POSTS } from "./bench-corpus.js";
 import { evaluate, groupByInterests, penalty } from "./eval-harness.js";
 
@@ -349,11 +348,32 @@ export function runChecks({ layoutAvailable = true } = {}) {
     assert(avoid.options.join("|") === "politics|war|none of these", "avoid question");
   });
 
+  check("decision: the kind gate turns a topic match into NO", () => {
+    const qs = buildQuestions("ai: models", "", DEFAULT_OPTIONS);
+    const gate = qs[qs.length - 1];
+    assert(gate.type === "choice" && !("keep" in gate), "gate is sent as a plain question");
+    const story = { type: "choice", choice: "personal story or career update", confidence: 0.8 };
+    const explain = { type: "choice", choice: KIND_GATE.keep[0], confidence: 0.8 };
+    const topic = { type: "choice", choice: "ai", confidence: 0.9 };
+    assert(judge("ai: models", [topic, story]).answer === "NO", "story hidden");
+    assert(judge("ai: models", [topic, story]).reason.startsWith("gate:"), "reason names the gate");
+    assert(judge("ai: models", [topic, explain]).answer === "YES", "explanation shown");
+    // With an avoid list the gate is still last.
+    const none = { type: "choice", choice: "none of these", confidence: 1 };
+    assert(judge("ai: models", [topic, none, story]).answer === "NO", "gate after avoid");
+    assert(judge("ai: models", [topic, none, explain]).answer === "YES", "pass after avoid");
+  });
+
+  check("cleanText folds styled Unicode letters back to ASCII", () => {
+    assert(cleanText("𝗦𝗼𝗻𝗻𝗲𝘁  𝟱.𝟱") === "Sonnet 5.5", `got ${cleanText("𝗦𝗼𝗻𝗻𝗲𝘁  𝟱.𝟱")}`);
+  });
+
   check("decision: an avoid hit hides even a matching post", () => {
-    const yes = judge("a, b", [{ choice: "a", confidence: 0.9 }]);
-    const avoided = judge("a, b", [{ choice: "a", confidence: 0.9 }, { choice: "war", confidence: 0.8 }]);
+    const noGate = { ...DEFAULT_OPTIONS, gate: null };
+    const yes = judge("a, b", [{ choice: "a", confidence: 0.9 }], noGate);
+    const avoided = judge("a, b", [{ choice: "a", confidence: 0.9 }, { choice: "war", confidence: 0.8 }], noGate);
     const gated = judge("a, b", [{ choice: "a", confidence: 0.9 }, { choice: "war", confidence: 0.4 }], {
-      ...DEFAULT_OPTIONS,
+      ...noGate,
       avoidMinConfidence: 0.6,
     });
     assert(yes.answer === "YES", "match shows");
@@ -404,48 +424,14 @@ export function runChecks({ layoutAvailable = true } = {}) {
     }
   });
 
-  // --- verdict parsing --------------------------------------------------
-
-  check("parseVerdict reads plain English answers", () => {
-    assert(parseVerdict("YES") === "YES", "YES");
-    assert(parseVerdict("yes") === "YES", "lowercase");
-    assert(parseVerdict("  Yes. ") === "YES", "padded and punctuated");
-    assert(parseVerdict("YES: postgres tuning") === "YES", "verdict with trailing reason");
-    assert(parseVerdict("NO") === "NO", "NO");
-    assert(parseVerdict("No.") === "NO", "punctuated no");
-  });
-
-  check("parseVerdict handles the model replying in the post's language", () => {
-    // This was silently landing on NO by luck before parseVerdict existed.
-    assert(parseVerdict("Sim") === "YES", "portuguese yes");
-    assert(parseVerdict("Sim.") === "YES", "portuguese yes punctuated");
-    assert(parseVerdict("Sí") === "YES", "spanish yes");
-    assert(parseVerdict("Oui") === "YES", "french yes");
-    assert(parseVerdict("Não.") === "NO", "portuguese no");
-    assert(parseVerdict("Nein") === "NO", "german no");
-  });
-
-  check("parseVerdict fails closed on junk output", () => {
-    assert(parseVerdict("") === "NO", "empty");
-    assert(parseVerdict("   ") === "NO", "whitespace");
-    assert(parseVerdict(undefined) === "NO", "undefined");
-    assert(parseVerdict(null) === "NO", "null");
-    assert(parseVerdict("I'm not sure about this one") === "NO", "waffle");
-    assert(parseVerdict("Maybe") === "NO", "maybe");
-  });
-
-  check("parseVerdict does not match yes inside another word", () => {
-    assert(parseVerdict("Yesterday's post about SQL") === "NO", "yesterday is not yes");
-    assert(parseVerdict("Java is mentioned") === "NO", "ja must not match Java");
-  });
-
   // --- eval harness scoring ---------------------------------------------
   // A scoring bug would quietly mislead every prompt comparison, so the
   // harness gets checked with a stub model instead of the real one.
 
-  const stubModel = (answers) => {
+  // A strategy whose decide() hands back the given answers in order.
+  const stub = (answers) => {
     let i = 0;
-    return async () => answers[i++] ?? "NO";
+    return { name: "stub", decide: async () => ({ answer: answers[i++] ?? "NO" }) };
   };
 
   const asyncChecks = [];
@@ -458,8 +444,6 @@ export function runChecks({ layoutAvailable = true } = {}) {
     );
   };
 
-  const plain = { name: "stub", maxTokens: 8, chars: 800, system: () => "sys" };
-
   checkAsync("evaluate counts a clean sweep as all correct", async () => {
     const cases = [
       { label: "a", want: "YES", text: "a deep dive into postgres query planning" },
@@ -467,9 +451,8 @@ export function runChecks({ layoutAvailable = true } = {}) {
     ];
     const score = await evaluate({
       cases,
-      strategy: plain,
+      strategy: stub(["YES", "NO"]),
       interests: "sql",
-      callModel: stubModel(["YES", "NO"]),
     });
     assert(score.correct === 2, `expected 2 correct, got ${score.correct}`);
     assert(score.falseHide === 0 && score.falsePass === 0, "no errors expected");
@@ -484,9 +467,8 @@ export function runChecks({ layoutAvailable = true } = {}) {
     ];
     const score = await evaluate({
       cases,
-      strategy: plain,
+      strategy: stub(["NO", "YES"]),
       interests: "sql",
-      callModel: stubModel(["NO", "YES"]),
     });
     assert(score.falseHide === 1, `expected 1 false-hide, got ${score.falseHide}`);
     assert(score.falsePass === 1, `expected 1 false-pass, got ${score.falsePass}`);
@@ -497,15 +479,13 @@ export function runChecks({ layoutAvailable = true } = {}) {
     const base = { label: "x", text: "postgres query planner internals" };
     const hideScore = await evaluate({
       cases: [{ ...base, want: "YES" }],
-      strategy: plain,
+      strategy: stub(["NO"]),
       interests: "sql",
-      callModel: stubModel(["NO"]),
     });
     const passScore = await evaluate({
       cases: [{ ...base, want: "NO" }],
-      strategy: plain,
+      strategy: stub(["YES"]),
       interests: "sql",
-      callModel: stubModel(["YES"]),
     });
     assert(
       penalty(hideScore) > penalty(passScore),
@@ -520,12 +500,14 @@ export function runChecks({ layoutAvailable = true } = {}) {
     let called = false;
     const score = await evaluate({
       cases,
-      strategy: plain,
-      interests: "sql",
-      callModel: async () => {
-        called = true;
-        return "YES";
+      strategy: {
+        name: "stub",
+        decide: async () => {
+          called = true;
+          return { answer: "YES" };
+        },
       },
+      interests: "sql",
     });
     assert(!called, "model must not be called when a rule matches");
     assert(score.ruleHits === 1, "rule hit should be counted");
@@ -538,10 +520,9 @@ export function runChecks({ layoutAvailable = true } = {}) {
     ];
     const score = await evaluate({
       cases,
-      strategy: plain,
+      strategy: stub(["YES"]),
       interests: "sql",
       useJunkRules: false,
-      callModel: stubModel(["YES"]),
     });
     assert(score.ruleHits === 0, "no rules should fire");
     assert(score.falsePass === 1, "model's mistake should be visible");

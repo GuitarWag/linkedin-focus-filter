@@ -91,7 +91,7 @@ export async function loadLaya({ onProgress } = {}) {
       const sum = exp.reduce((a, b) => a + b, 0);
       const p = exp.map((e) => e / sum);
       const best = p.indexOf(Math.max(...p));
-      answers.push({ choice: q.options[best], confidence: p[best] });
+      answers.push({ type: "choice", choice: q.options[best], confidence: p[best] });
     }
     return answers;
   }

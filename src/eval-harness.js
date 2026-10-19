@@ -5,8 +5,8 @@
 // because they are not equally bad: hiding something wanted is worse than
 // letting junk through, so the headline score weights it double.
 import { POSTS as BUILTIN, INTERESTS as DEFAULT_INTERESTS } from "./bench-corpus.js";
+import { cleanText } from "./decision.js";
 import { matchJunkRule } from "./junk-filter.js";
-import { parseVerdict } from "./verdict.js";
 
 export const FALSE_HIDE_WEIGHT = 2;
 
@@ -91,35 +91,26 @@ export function summarise(score) {
   };
 }
 
-// Run one strategy over one interest group. `callModel` does the inference so
-// this module stays free of engine concerns.
-export async function evaluate({ cases, strategy, interests, callModel, useJunkRules = true }) {
+// Run one strategy over one interest group. `strategy.decide(text, interests,
+// kase)` returns `{ answer, raw }` (the shape decision.js's judge produces), so
+// this module stays free of model concerns.
+export async function evaluate({ cases, strategy, interests, useJunkRules = true }) {
   const score = emptyScore();
 
-  for (const kase of cases) {
-    // Mirror the shipped order: cheap deterministic rules first, model second.
+  for (const original of cases) {
+    // Mirror the shipped pipeline: the same text cleanup, then cheap
+    // deterministic rules, then the model.
+    const kase = { ...original, text: cleanText(original.text) };
     const rule = useJunkRules ? matchJunkRule(kase.text) : null;
     if (rule) {
       recordOutcome(score, kase, "NO", { viaRule: rule });
       continue;
     }
 
-    const messages = strategy.system ? [{ role: "system", content: strategy.system(interests) }] : [];
-    for (const shot of strategy.shots ?? []) {
-      messages.push({ role: "user", content: shot.user });
-      messages.push({ role: "assistant", content: shot.assistant });
-    }
-    messages.push({ role: "user", content: kase.text.slice(0, strategy.chars ?? 800) });
-
-    // A decision model answers the question directly instead of generating
-    // text, so it takes the post and interests rather than chat messages.
     const started = performance.now();
-    const raw = strategy.decide
-      ? await strategy.decide(kase.text.slice(0, strategy.chars ?? 800), interests, kase)
-      : await callModel(messages, strategy.maxTokens ?? 8);
+    const { answer, raw = "" } = await strategy.decide(kase.text.slice(0, strategy.chars ?? 800), interests, kase);
     const latencyMs = performance.now() - started;
-    const got = (strategy.parse ?? parseVerdict)(raw);
-    recordOutcome(score, kase, got, { latencyMs, raw });
+    recordOutcome(score, kase, answer, { latencyMs, raw });
   }
 
   return summarise(score);

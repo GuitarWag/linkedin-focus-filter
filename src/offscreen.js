@@ -51,7 +51,8 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
     load()
       .then((j) => j.decide(text, questions))
       .then(
-        (answers) => reply({ answers: answers.map((a) => ({ choice: a.choice, confidence: a.confidence })) }),
+        // Drop the per-option distributions; judge() reads the rest.
+        (answers) => reply({ answers: answers.map(({ probabilities, ...a }) => a) }),
         (err) => reply({ error: String(err?.message || err) })
       );
     return true;

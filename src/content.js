@@ -1,4 +1,4 @@
-import { buildQuestions, judge } from "./decision.js";
+import { buildQuestions, buildState, cleanText, judge } from "./decision.js";
 import { matchJunkRule } from "./junk-filter.js";
 import {
   PROCESSED_ATTR,
@@ -155,16 +155,20 @@ function ensureModel() {
   if (modelLoading) return modelLoading;
   setStatus("loading", "Starting model…");
   debugLog("engine:start", {});
-  modelLoading = ext.runtime.sendMessage({ lifEnsureModel: true }).then((r) => {
-    modelLoading = null; // a failure retries on the next post
-    if (!r || r.error) {
-      debugLog("engine:error", { message: r?.error || "no reply" });
-      throw new Error(r?.error || "model did not start");
-    }
-    modelReady = true;
-    setStatus("ready", "Model loaded, filtering posts");
-    debugLog("engine:ready", { runtime: r.runtime, loadMs: r.loadMs });
-  });
+  modelLoading = ext.runtime
+    .sendMessage({ lifEnsureModel: true })
+    .then((r) => {
+      if (!r || r.error) {
+        debugLog("engine:error", { message: r?.error || "no reply" });
+        throw new Error(r?.error || "model did not start");
+      }
+      modelReady = true;
+      setStatus("ready", "Model loaded, filtering posts");
+      debugLog("engine:ready", { runtime: r.runtime, loadMs: r.loadMs });
+    })
+    // Reset on rejection too, or a dead message port would pin every later
+    // post to this failed promise. A failure retries on the next post.
+    .finally(() => (modelLoading = null));
   return modelLoading;
 }
 
@@ -186,7 +190,7 @@ function extractText(post) {
     ? Array.from(parts).map((p) => p.textContent).join("\n")
     : post.textContent;
   // Drop a high surrogate left dangling by the cut, or the logged JSON breaks.
-  return text.replace(/\s+/g, " ").trim().slice(0, TEXT_CAP).replace(/[\ud800-\udbff]$/, "");
+  return cleanText(text).slice(0, TEXT_CAP).replace(/[\ud800-\udbff]$/, "");
 }
 
 const verdictCache = new Map(); // post text -> { answer, raw, reason }
@@ -202,13 +206,17 @@ async function classify(post) {
   });
   if (!text) {
     // Probably a skeleton that hasn't hydrated yet. Don't leave it veiled, and
-    // don't mark it done either — drop our claim so a later scan retries it
-    // once LinkedIn fills the content in.
+    // don't mark it done either. Hydration adds children inside the post, so
+    // the mutation scan never sees the post itself again; re-observe it after
+    // a pause. (Observing right away fires immediately on a visible post and
+    // spins.) Flagged so the retry doesn't veil it again.
     debugLog("classify:skip-empty-text", {});
     settleVeil(post);
     revealPost(post);
     delete post.dataset[PROCESSED_ATTR];
+    post.dataset.lifRetry = "1";
     seen.delete(post);
+    setTimeout(() => activeMode === "filter" && post.isConnected && io.observe(post), 1000);
     return;
   }
 
@@ -238,7 +246,7 @@ async function classify(post) {
   }
 
   const questions = buildQuestions(config.interests, config.avoid);
-  const systemPrompt = questions.map((q) => `${q.instructions} [${q.options.join(" | ")}]`).join(" + ");
+  const systemPrompt = questions.map((q) => `${q.instructions} [${(q.options ?? []).join(" | ")}]`).join(" + ");
   const cached = verdictCache.get(text);
   if (!cached) await ensureModel();
 
@@ -253,7 +261,7 @@ async function classify(post) {
 
   if (!cached) {
     const startedAt = performance.now();
-    const r = await decide(text, questions);
+    const r = await decide(buildState(text), questions);
     latencyMs = Math.round(performance.now() - startedAt);
 
     if (activeMode !== "filter") {
@@ -351,6 +359,9 @@ const veilTimers = new WeakMap();
 
 function releaseVeilLater(post) {
   const id = setTimeout(() => {
+    // A re-apply (interests changed) re-conceals the post with a fresh timer;
+    // this one is then stale and must not reveal the new veil early.
+    if (veilTimers.get(post) !== id) return;
     veilTimers.delete(post);
     if (post.dataset[PROCESSED_ATTR] !== "pending") return;
     debugLog("veil:timeout-reveal", {});

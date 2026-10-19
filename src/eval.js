@@ -1,12 +1,10 @@
-// Backend comparison over the eval corpus: the shipped generative model
-// against decision models, all through the same harness (junk rules first,
-// then the backend). Run headless with `npm run eval`, or open test/eval.html.
-// ?backends=llama,kev picks which ones run.
-import { CreateMLCEngine } from "@mlc-ai/web-llm";
+// Backend comparison over the eval corpus: the shipped decision model against
+// other decision models, all through the same harness (junk rules first, then
+// the model). Run headless with `npm run eval`, or open test/eval.html.
+// ?backends=kev,laya picks which ones run.
 import { OpenJev } from "open-jev";
 import { loadLaya } from "./laya.js";
-import { MODEL_ID } from "./bench-corpus.js";
-import { DEFAULT_OPTIONS, MODEL_REPO, buildQuestions, judge } from "./decision.js";
+import { DEFAULT_OPTIONS, KIND_GATE, MODEL_REPO, buildQuestions, buildState, judge } from "./decision.js";
 import { evaluate, formatScore, groupByInterests, loadCorpus, penalty } from "./eval-harness.js";
 
 function log(msg) {
@@ -19,8 +17,6 @@ const progress = (text) => (document.getElementById("progress").textContent = te
 // One strategy per decision.js option set, for any decision model with
 // decide(text, questions) -> [{choice, confidence}]. A case's own avoid list
 // (if any) is used; cases without one test the interest question alone.
-const DECOYS = ["general news or opinion", "personal story or career", "advertising or promotion"];
-const TECHNICAL = "Which of these does this post discuss in technical depth?";
 
 // The same intent as "ai engineer, software engineer, SDLC", written as
 // described topics. Tests whether rephrasing interests (a popup hint) helps.
@@ -30,6 +26,25 @@ const DESCRIBED_INTERESTS = [
   "Infrastructure and DevOps: cloud, Kubernetes, CI/CD, GPUs, deployment, reliability",
   "Developer tools: coding agents, IDEs, frameworks, open-source tools, side projects",
 ].join("\n");
+
+// Alternatives to the shipped gate and prefix, kept so a change in the corpus
+// can re-rank them.
+const KIND_SPLIT = {
+  ...KIND_GATE,
+  options: [
+    "technical explanation or analysis",
+    "AI model, benchmark or research news",
+    "product launch or marketing",
+    ...KIND_GATE.options.slice(2),
+  ],
+  descriptions: {
+    ...KIND_GATE.descriptions,
+    "AI model, benchmark or research news": "a new model, a benchmark result, a paper, or an engineering platform",
+    "product launch or marketing": "pitches a product or an app to potential customers",
+  },
+  keep: ["technical explanation or analysis", "AI model, benchmark or research news"],
+};
+const BODY_PREFIX = "LinkedIn feed post. Judge the body of the post, not the tools or job titles it name-drops.\n";
 
 function decisionVariants(model, decide) {
   // Laya picks an avoid topic at low confidence on unrelated posts (0.37-0.43
@@ -41,61 +56,37 @@ function decisionVariants(model, decide) {
     decide: async (text, caseInterests, kase) => {
       const o = { ...DEFAULT_OPTIONS, ...base, ...opts };
       const interests = o.interests ?? caseInterests;
-      const answers = await decide(text, buildQuestions(interests, kase.avoid ?? "", o));
-      const v = judge(interests, answers, o);
-      return `${v.answer} ${v.raw}`;
+      const answers = await decide(buildState(text, o), buildQuestions(interests, kase.avoid ?? "", o));
+      return judge(interests, answers, o);
     },
   });
+  const D = { interests: DESCRIBED_INTERESTS };
+  // Laya's port speaks choice questions only, and its gate answers were never
+  // measured; it runs without one.
+  if (model === "laya") {
+    return [
+      variant("role-word interests, no gate", { gate: null }),
+      variant("described interests, no gate", { ...D, gate: null }),
+    ];
+  }
   return [
-    variant("shipped (decision.js defaults)", {}),
-    variant("technical-depth + decoys", { instructions: TECHNICAL, decoys: DECOYS }),
-    variant("no other description", { otherDescription: "" }),
-    variant("technical-depth wording", { instructions: TECHNICAL }),
-    variant("described interests", { interests: DESCRIBED_INTERESTS }),
-    variant("described interests, no other description", { interests: DESCRIBED_INTERESTS, otherDescription: "" }),
-    variant("described interests + technical", { interests: DESCRIBED_INTERESTS, instructions: TECHNICAL }),
-    variant("described interests, yes >= 0.5", { interests: DESCRIBED_INTERESTS, minConfidence: 0.5 }),
+    variant("shipped (decision.js defaults) with described interests", D),
+    variant("shipped with role-word interests", {}),
+    variant("described, no gate", { ...D, gate: null }),
+    variant("described, no gate, no prefix", { ...D, gate: null, statePrefix: "" }),
+    variant("described, plain kind options", { ...D, gate: { ...KIND_GATE, descriptions: undefined } }),
+    variant("described, research/marketing split", { ...D, gate: KIND_SPLIT }),
+    variant("described, body prefix", { ...D, statePrefix: BODY_PREFIX }),
+    variant("described, body prefix + split", { ...D, statePrefix: BODY_PREFIX, gate: KIND_SPLIT }),
+    // Measured and dropped: noul "substance"/"fluff" statements (Kev says yes
+    // to nearly every post), a 4-level substance score (false-hides), an "is
+    // English" noul (no change), keeping "opinion" in the kind gate (no
+    // change), a sharper OTHER description (no change). See git history.
   ];
 }
 
 // Each backend loads once and returns the strategies it contributes.
 const BACKENDS = {
-  async llama() {
-    const base = new URL(`models/${MODEL_ID}/`, location.href).href;
-    const engine = await CreateMLCEngine(MODEL_ID, {
-      appConfig: {
-        cacheBackend: "indexeddb",
-        model_list: [
-          {
-            model: base,
-            model_id: MODEL_ID,
-            model_lib: base + "model.wasm",
-            vram_required_MB: 879.04,
-            low_resource_required: true,
-            overrides: { context_window_size: 4096 },
-          },
-        ],
-      },
-      initProgressCallback: (p) => progress(p.text),
-    });
-    const callModel = async (messages, maxTokens) => {
-      const r = await engine.chat.completions.create({ messages, max_tokens: maxTokens, temperature: 0 });
-      return r.choices[0]?.message?.content?.trim() ?? "";
-    };
-    return {
-      callModel,
-      strategies: [
-        {
-          name: "llama-1b: shipped prompt",
-          maxTokens: 8,
-          chars: 800,
-          system: (i) =>
-            `Topics: ${i}. Is this post mainly about one of those topics? Answer in English, YES or NO.`,
-        },
-      ],
-    };
-  },
-
   // Kev-0.6B: a Jev-shaped decision model (Qwen3-0.6B base). One forward
   // pass returns a probability per option; nothing is generated.
   async kev() {
@@ -115,7 +106,7 @@ const BACKENDS = {
 };
 
 async function run() {
-  const wanted = (new URLSearchParams(location.search).get("backends") || "llama,kev,laya").split(",");
+  const wanted = (new URLSearchParams(location.search).get("backends") || "kev,laya").split(",");
   const results = [];
   try {
     const corpus = await loadCorpus();
@@ -130,7 +121,7 @@ async function run() {
       log(`${name} ready in ${Math.round(performance.now() - t0)}ms`);
       for (const strategy of backend.strategies) {
         for (const [interests, cases] of groups) {
-          const score = await evaluate({ cases, strategy, interests, callModel: backend.callModel });
+          const score = await evaluate({ cases, strategy, interests });
           results.push({ interests, name: strategy.name, score });
           log(`\n=== ${strategy.name}  [${interests}]`);
           log(formatScore(strategy.name, score));
