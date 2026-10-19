@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body { font: 13px -apple-system, sans-serif; width: 300px; padding: 14px; }
+      h1 { font-size: 14px; margin: 0 0 12px; }
+      textarea { width: 100%; min-height: 64px; box-sizing: border-box; font: inherit; }
+      select { width: 100%; margin-top: 4px; box-sizing: border-box; }
+      label { display: block; margin-top: 12px; font-weight: 600; }
+      button { padding: 6px 10px; border: none; border-radius: 5px; cursor: pointer; }
+      #save { width: 100%; margin-top: 14px; background: #0a66c2; color: #fff; font-weight: 600; padding: 8px; }
+      p.hint { color: #888; font-size: 11px; margin: 4px 0 0; }
+
+      #statusBox {
+        display: flex; align-items: center; gap: 6px; margin-top: 4px;
+        padding: 8px 10px; border-radius: 6px; background: #f4f4f5; font-size: 12px;
+      }
+      #statusDot { width: 8px; height: 8px; border-radius: 50%; background: #aaa; flex: none; }
+      #statusDot.ready { background: #2ea043; }
+      #statusDot.loading { background: #d29922; }
+      #statusDot.error { background: #d1242f; }
+      #statusDot.idle { background: #999; }
+
+      #progressTrack {
+        margin-top: 6px; height: 5px; border-radius: 3px; background: #e5e5e7; overflow: hidden;
+      }
+      #progressBar {
+        height: 100%; width: 0%; background: #0a66c2; border-radius: 3px;
+        transition: width .2s ease;
+      }
+
+      #statsBox {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-top: 10px; font-size: 12px; color: #444;
+      }
+      #resetStats { background: none; color: #0a66c2; font-size: 11px; padding: 2px 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Focus Filter</h1>
+
+    <div>
+      <div id="statusBox">
+        <span id="statusDot" class="idle"></span>
+        <span id="statusText">Checking…</span>
+      </div>
+      <div id="progressTrack" hidden>
+        <div id="progressBar"></div>
+      </div>
+    </div>
+
+    <div id="statsBox">
+      <span>Hidden: <strong id="statHidden">0</strong> · Shown: <strong id="statShown">0</strong></span>
+      <button id="resetStats" type="button">Reset</button>
+    </div>
+    <button id="viewLog" type="button" style="width:100%;margin-top:6px;background:#f4f4f5;color:#333;">View activity log</button>
+
+    <label for="mode">Mode</label>
+    <select id="mode">
+      <option value="off">Off</option>
+      <option value="filter">Smart filter (on-device LLM)</option>
+      <option value="block">Block entire feed</option>
+    </select>
+
+    <div id="filterSettings">
+      <label for="interests">Your interests</label>
+      <textarea id="interests" rows="5" placeholder="AI engineering: LLMs, agents, model releases, evals&#10;Infrastructure: cloud, Kubernetes, CI/CD"></textarea>
+      <p class="hint">One topic per line as "topic: what it covers" works best; a comma list also works. Posts that don't match get collapsed.</p>
+      <label for="avoid">Never show</label>
+      <textarea id="avoid" placeholder="e.g. politics, war"></textarea>
+      <p class="hint">Posts mainly about these are hidden even when they match an interest. Promoted posts are always hidden.</p>
+      <p class="hint">Runs on a bundled Kev 0.6B decision model, no network needed after install.</p>
+    </div>
+
+    <button id="save">Save</button>
+    <p class="hint" id="saveStatus"></p>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "linkedin-focus-filter",
+  "version": "1.0.0",
+  "description": "Chrome extension that filters the LinkedIn feed against your interests with an on-device decision model.",
+  "scripts": {
+    "build": "node build.js",
+    "build:debug": "LIF_TELEMETRY=1 node build.js",
+    "telemetry": "node telemetry-server.js",
+    "dev": "npm run build:debug && node dev-reload.js",
+    "eval": "node build-test.js && node eval-run.js",
+    "test": "node build-test.js && node .test-build/checks.cjs"
+  },
+  "author": "Wagner Silva",
+  "type": "commonjs",
+  "dependencies": {
+    "@mlc-ai/web-llm": "0.2.84",
+    "esbuild": "0.28.2"
+  },
+  "devDependencies": {
+    "@huggingface/transformers": "4.3.1",
+    "jsdom": "29.1.1",
+    "open-jev": "0.1.2"
+  },
+  "private": true,
+  "license": "MIT"
+}
