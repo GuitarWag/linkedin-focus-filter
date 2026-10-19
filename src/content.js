@@ -42,7 +42,6 @@ const VEIL_TIMEOUT_MS = 20000;
 let config = { ...DEFAULTS };
 let modelReady = false;
 let modelLoading = null;
-let processedCount = 0;
 const queue = [];
 let draining = false;
 
@@ -238,7 +237,6 @@ async function classify(post) {
   const junkRule = isPromoted(post) ? "promoted" : matchJunkRule(text);
   if (junkRule) {
     settleVeil(post);
-    processedCount++;
     hidePost(post, junkRule === "promoted" ? "promoted" : `matched the ${junkRule} rule`);
     bumpStat("hidden");
     bumpStat("rules");
@@ -254,7 +252,7 @@ async function classify(post) {
       hidden: true,
       latencyMs: 0,
     });
-    setStatus("ready", `Classified ${processedCount} post${processedCount === 1 ? "" : "s"}`);
+    setStatus("ready", "Filtering the feed");
     return;
   }
 
@@ -291,7 +289,6 @@ async function classify(post) {
   const { answer, raw, reason } = verdict;
 
   settleVeil(post);
-  processedCount++;
 
   const hidden = answer === "NO";
   if (hidden) hidePost(post, hideReason(reason));
@@ -311,7 +308,7 @@ async function classify(post) {
     hidden,
     latencyMs,
   });
-  setStatus("ready", `Classified ${processedCount} post${processedCount === 1 ? "" : "s"}`);
+  setStatus("ready", "Filtering the feed");
 }
 
 async function drainQueue() {
