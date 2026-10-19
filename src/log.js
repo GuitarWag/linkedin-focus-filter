@@ -39,7 +39,7 @@ function renderStats() {
 
   const timeline = document.getElementById("timeline");
   if (!total) {
-    timeline.innerHTML = '<span class="empty-note">Timeline will fill in as posts get classified.</span>';
+    timeline.innerHTML = '<span class="empty-note">The timeline fills in as the filter checks posts.</span>';
   } else {
     timeline.innerHTML = [...entries]
       .reverse()
@@ -56,13 +56,37 @@ function renderStats() {
   const evalNote = document.getElementById("evalNote");
   evalNote.textContent = n
     ? `${n} labelled · model agrees on ${agree}/${n}`
-    : "Nothing labelled yet — mark verdicts right or wrong to build an eval set.";
+    : "Nothing labelled yet. Mark verdicts right or wrong to build an eval set.";
   document.getElementById("exportEval").disabled = n === 0;
   document.getElementById("copyEval").disabled = n === 0;
 }
 
+// One bucket per cause, so repeated reasons with different confidences group.
+function hiddenCause(e) {
+  if (e.junkRule) return `rule: ${e.junkRule}`;
+  const r = e.reason || "";
+  if (r.startsWith("avoid: ")) return r;
+  if (r.startsWith("gate: ")) return `kind: ${r.slice(6).replace(/ \([\d.]+\)$/, "")}`;
+  return "no topic match";
+}
+
+function tally(keys) {
+  const counts = new Map();
+  for (const k of keys) counts.set(k, (counts.get(k) || 0) + 1);
+  const rows = [...counts].sort((a, b) => b[1] - a[1]);
+  return rows.length
+    ? rows.map(([k, n]) => `<li><span>${escapeHtml(k)}</span><span>${n}</span></li>`).join("")
+    : '<li><span class="latency">None yet</span></li>';
+}
+
+function renderBreakdown() {
+  document.getElementById("hiddenWhy").innerHTML = tally(entries.filter((e) => e.hidden).map(hiddenCause));
+  document.getElementById("shownTopics").innerHTML = tally(entries.filter((e) => !e.hidden).map((e) => e.reason || "?"));
+}
+
 function render() {
   renderStats();
+  renderBreakdown();
   const list = document.getElementById("list");
   const empty = document.getElementById("empty");
   if (!entries.length) {
@@ -96,14 +120,14 @@ function render() {
           </div>
           <div class="trace">
             ${e.want ? `<h3>Your label</h3><pre>want ${escapeHtml(e.want)} (model said ${escapeHtml(e.answer)})</pre>` : ""}
-            ${e.junkRule ? `<h3>Junk rule</h3><pre>${escapeHtml(e.junkRule)} — hidden without a model call</pre>` : ""}
-            <h3>Interests at the time</h3>
+            ${e.junkRule ? `<h3>Junk rule</h3><pre>${escapeHtml(e.junkRule)}: hidden without a model call</pre>` : ""}
+            <h3>Your topics at the time</h3>
             <pre>${escapeHtml(e.interests || "")}</pre>
-            <h3>System prompt</h3>
+            <h3>Questions asked</h3>
             <pre>${escapeHtml(e.systemPrompt || "")}</pre>
             <h3>Post text sent to model</h3>
             <pre>${escapeHtml(e.text || "")}</pre>
-            <h3>Raw model output</h3>
+            <h3>Model answers</h3>
             <pre>${escapeHtml(e.rawOutput || "")}</pre>
           </div>
         </div>
@@ -184,7 +208,7 @@ document.getElementById("copyEval").addEventListener("click", async () => {
     await navigator.clipboard.writeText(text);
     document.getElementById("evalNote").textContent = "Copied eval set to clipboard.";
   } catch {
-    document.getElementById("evalNote").textContent = "Clipboard blocked — use Export instead.";
+    document.getElementById("evalNote").textContent = "The browser blocked the clipboard. Use Export instead.";
   }
 });
 

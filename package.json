@@ -8,7 +8,8 @@
     "telemetry": "node telemetry-server.js",
     "dev": "npm run build:debug && node dev-reload.js",
     "eval": "node build-test.js && node eval-run.js",
-    "test": "node build-test.js && node .test-build/checks.cjs"
+    "test": "node build-test.js && node .test-build/checks.cjs",
+    "bench:baselines": "esbuild src/bench-baselines.js --bundle --platform=node --log-level=warning --outfile=.test-build/baselines.cjs && node .test-build/baselines.cjs"
   },
   "author": "Wagner Silva",
   "type": "commonjs",
@@ -20,6 +21,7 @@
     "esbuild": "0.28.2",
     "jsdom": "29.1.1"
   },
+  "engines": { "node": ">=18" },
   "private": true,
   "license": "MIT"
 }

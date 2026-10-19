@@ -13,7 +13,7 @@ import {
   revealPost,
   unblockFeed,
 } from "./dom-ops.js";
-import { DEFAULT_OPTIONS, KIND_GATE, buildQuestions, cleanText, judge, topics } from "./decision.js";
+import { DEFAULT_OPTIONS, KIND_GATE, buildQuestions, cleanText, customOptions, judge, topics } from "./decision.js";
 import { matchJunkRule } from "./junk-filter.js";
 import { POSTS } from "./bench-corpus.js";
 import { evaluate, groupByInterests, penalty } from "./eval-harness.js";
@@ -362,6 +362,17 @@ export function runChecks({ layoutAvailable = true } = {}) {
     const none = { type: "choice", choice: "none of these", confidence: 1 };
     assert(judge("ai: models", [topic, none, story]).answer === "NO", "gate after avoid");
     assert(judge("ai: models", [topic, none, explain]).answer === "YES", "pass after avoid");
+  });
+
+  check("decision: customOptions falls back to defaults and drops a keep-all gate", () => {
+    const blank = customOptions({ instructions: "  ", keepKinds: [] });
+    assert(blank.instructions === DEFAULT_OPTIONS.instructions, "blank wording keeps default");
+    assert(blank.gate.keep.join("|") === KIND_GATE.keep.join("|"), "empty keep list keeps default gate");
+    const custom = customOptions({ instructions: "Topic?", keepKinds: ["joke or meme"] });
+    assert(buildQuestions("ai", "", custom)[0].instructions === "Topic?", "wording reaches the question");
+    const joke = { type: "choice", choice: "joke or meme", confidence: 0.9 };
+    assert(judge("ai", [{ choice: "ai", confidence: 0.9 }, joke], custom).answer === "YES", "custom keep passes");
+    assert(customOptions({ keepKinds: KIND_GATE.options }).gate === null, "keeping every kind drops the gate");
   });
 
   check("cleanText folds styled Unicode letters back to ASCII", () => {

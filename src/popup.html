@@ -3,78 +3,123 @@
   <head>
     <meta charset="utf-8" />
     <style>
-      body { font: 13px -apple-system, sans-serif; width: 300px; padding: 14px; }
-      h1 { font-size: 14px; margin: 0 0 12px; }
-      textarea { width: 100%; min-height: 64px; box-sizing: border-box; font: inherit; }
-      select { width: 100%; margin-top: 4px; box-sizing: border-box; }
-      label { display: block; margin-top: 12px; font-weight: 600; }
-      button { padding: 6px 10px; border: none; border-radius: 5px; cursor: pointer; }
-      #save { width: 100%; margin-top: 14px; background: #0a66c2; color: #fff; font-weight: 600; padding: 8px; }
-      p.hint { color: #888; font-size: 11px; margin: 4px 0 0; }
+      :root {
+        --bg: #fff; --fg: #1a1a1a; --muted: #6b6b70; --card: #f4f4f5; --line: #e2e2e5;
+        --accent: #0a66c2; --accent-fg: #fff; --ok: #2ea043; --warn: #d29922; --bad: #d1242f;
+        --shown: #4caf50; --hidden: #e57373;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #1c1c1f; --fg: #ececee; --muted: #9a9aa2; --card: #28282c; --line: #3a3a40;
+          --accent: #4c9aff; --accent-fg: #0b0b0d;
+        }
+      }
+      body { font: 13px -apple-system, system-ui, sans-serif; width: 320px; margin: 0; padding: 14px; background: var(--bg); color: var(--fg); }
+      header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+      h1 { font-size: 15px; margin: 0; }
+      label, .label { display: block; margin-top: 12px; font-weight: 600; }
+      textarea, input[type="text"] {
+        width: 100%; box-sizing: border-box; font: inherit; margin-top: 4px; padding: 6px 8px;
+        border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg);
+      }
+      textarea { min-height: 56px; resize: vertical; }
+      button { font: inherit; border: none; border-radius: 6px; cursor: pointer; }
+      .link { background: none; color: var(--accent); padding: 0; font-size: 12px; }
+      .hint { color: var(--muted); font-size: 11px; margin: 4px 0 0; line-height: 1.4; }
+      .card { background: var(--card); border-radius: 8px; padding: 10px 12px; }
 
-      #statusBox {
-        display: flex; align-items: center; gap: 6px; margin-top: 4px;
-        padding: 8px 10px; border-radius: 6px; background: #f4f4f5; font-size: 12px;
-      }
-      #statusDot { width: 8px; height: 8px; border-radius: 50%; background: #aaa; flex: none; }
-      #statusDot.ready { background: #2ea043; }
-      #statusDot.loading { background: #d29922; }
-      #statusDot.error { background: #d1242f; }
-      #statusDot.idle { background: #999; }
+      #status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+      #statusDot { width: 8px; height: 8px; border-radius: 50%; background: #999; flex: none; }
+      #statusDot.ready { background: var(--ok); }
+      #statusDot.loading { background: var(--warn); }
+      #statusDot.error { background: var(--bad); }
+      #progressTrack { margin-top: 6px; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+      #progressBar { height: 100%; width: 0%; background: var(--accent); transition: width .2s ease; }
 
-      #progressTrack {
-        margin-top: 6px; height: 5px; border-radius: 3px; background: #e5e5e7; overflow: hidden;
-      }
-      #progressBar {
-        height: 100%; width: 0%; background: #0a66c2; border-radius: 3px;
-        transition: width .2s ease;
-      }
+      #stats .nums { display: flex; gap: 16px; }
+      #stats .num { font-size: 20px; font-weight: 700; line-height: 1.1; }
+      #stats .cap { font-size: 11px; color: var(--muted); }
+      #ratio { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0 6px; background: var(--line); }
+      #ratio .s { background: var(--shown); }
+      #ratio .h { background: var(--hidden); }
+      #stats .row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
 
-      #statsBox {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-top: 10px; font-size: 12px; color: #444;
-      }
-      #resetStats { background: none; color: #0a66c2; font-size: 11px; padding: 2px 4px; }
+      .segmented { display: flex; margin-top: 4px; background: var(--card); border-radius: 7px; padding: 2px; }
+      .segmented input { position: absolute; opacity: 0; pointer-events: none; }
+      .segmented label { flex: 1; margin: 0; text-align: center; padding: 6px 0; border-radius: 5px; cursor: pointer; font-weight: 500; }
+      .segmented input:checked + label { background: var(--bg); box-shadow: 0 1px 2px rgba(0,0,0,.15); font-weight: 600; }
+      .segmented input:focus-visible + label { outline: 2px solid var(--accent); }
+
+      details { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+      summary { cursor: pointer; font-weight: 600; }
+      .kinds label { display: flex; gap: 6px; align-items: center; font-weight: 400; margin-top: 4px; }
+
+      #save { width: 100%; margin-top: 14px; background: var(--accent); color: var(--accent-fg); font-weight: 600; padding: 8px; }
+      #save:disabled { opacity: .5; cursor: default; }
+      footer { margin-top: 10px; }
     </style>
   </head>
   <body>
-    <h1>Focus Filter</h1>
+    <header>
+      <h1><img src="icons/icon.svg" alt="" width="16" height="16" style="vertical-align:-2px;margin-right:6px" />Focus Filter</h1>
+      <div id="status"><span id="statusDot"></span><span id="statusText">Checking…</span></div>
+    </header>
+    <div id="progressTrack" hidden><div id="progressBar"></div></div>
 
-    <div>
-      <div id="statusBox">
-        <span id="statusDot" class="idle"></span>
-        <span id="statusText">Checking…</span>
+    <div id="stats" class="card">
+      <div class="nums">
+        <div><div class="num" id="statShown">0</div><div class="cap">shown</div></div>
+        <div><div class="num" id="statHidden">0</div><div class="cap">hidden</div></div>
+        <div><div class="num" id="statPct">0%</div><div class="cap">of the feed hidden</div></div>
       </div>
-      <div id="progressTrack" hidden>
-        <div id="progressBar"></div>
+      <div id="ratio"><div class="s" id="ratioShown"></div><div class="h" id="ratioHidden"></div></div>
+      <div class="cap" id="statRules"></div>
+      <div class="row">
+        <button id="viewLog" class="link" type="button">Open activity log</button>
+        <button id="resetStats" class="link" type="button">Reset counts</button>
       </div>
     </div>
 
-    <div id="statsBox">
-      <span>Hidden: <strong id="statHidden">0</strong> · Shown: <strong id="statShown">0</strong></span>
-      <button id="resetStats" type="button">Reset</button>
+    <span class="label" id="modeLabel">Mode</span>
+    <div class="segmented" role="radiogroup" aria-labelledby="modeLabel">
+      <input type="radio" name="mode" id="mode-off" value="off" /><label for="mode-off">Off</label>
+      <input type="radio" name="mode" id="mode-filter" value="filter" /><label for="mode-filter">Filter</label>
+      <input type="radio" name="mode" id="mode-block" value="block" /><label for="mode-block">Block feed</label>
     </div>
-    <button id="viewLog" type="button" style="width:100%;margin-top:6px;background:#f4f4f5;color:#333;">View activity log</button>
-
-    <label for="mode">Mode</label>
-    <select id="mode">
-      <option value="off">Off</option>
-      <option value="filter">Smart filter (on-device LLM)</option>
-      <option value="block">Block entire feed</option>
-    </select>
+    <p class="hint" id="modeHint"></p>
 
     <div id="filterSettings">
-      <label for="interests">Your interests</label>
-      <textarea id="interests" rows="5" placeholder="AI engineering: LLMs, agents, model releases, evals&#10;Infrastructure: cloud, Kubernetes, CI/CD"></textarea>
-      <p class="hint">One topic per line as "topic: what it covers" works best; a comma list also works. Posts that don't match get collapsed.</p>
+      <label for="interests">Show posts about</label>
+      <textarea id="interests" rows="4" placeholder="AI engineering: LLMs, agents, model releases, evals&#10;Infrastructure: cloud, Kubernetes, CI/CD"></textarea>
+      <p class="hint">One topic per line. "Topic: what it covers" works best. A comma list also works.</p>
+
       <label for="avoid">Never show</label>
-      <textarea id="avoid" placeholder="e.g. politics, war"></textarea>
-      <p class="hint">Posts mainly about these are hidden even when they match an interest. Promoted posts are always hidden.</p>
-      <p class="hint">Runs on a bundled Kev 0.6B decision model, no network needed after install.</p>
+      <textarea id="avoid" rows="2" placeholder="politics, war"></textarea>
+      <p class="hint">Hidden even when they match a topic. Promoted posts are always hidden.</p>
+
+      <details id="advanced">
+        <summary>Model questions</summary>
+        <p class="hint">The model answers these questions for each post. It picks from options and writes no text, so a short, plain question works best.</p>
+
+        <label for="instructions">Topic question</label>
+        <input type="text" id="instructions" />
+
+        <label for="otherDescription">"Something else" covers</label>
+        <textarea id="otherDescription" rows="2"></textarea>
+        <p class="hint">Posts the model files here are hidden.</p>
+
+        <span class="label">Post kinds that can be shown</span>
+        <div class="kinds" id="kinds"></div>
+        <p class="hint">A post must match a topic and be one of these kinds. Tick all to turn this check off.</p>
+
+        <button id="resetAdvanced" class="link" type="button" style="margin-top:8px">Reset to defaults</button>
+      </details>
+
+      <button id="save" type="button" disabled>Save</button>
+      <p class="hint" id="saveStatus"></p>
     </div>
 
-    <button id="save">Save</button>
-    <p class="hint" id="saveStatus"></p>
+    <footer><p class="hint">The model runs on this device. Post text does not leave your browser.</p></footer>
     <script src="popup.js"></script>
   </body>
 </html>

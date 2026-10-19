@@ -1,0 +1,452 @@
+[
+  {
+    "label": "deepseek-code-arena",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Exciting news: DeepSeek-V4.1-Flash-20261017 (Max) by DeepSeekis now the #1 open model in Code Arena: WebDev, surpassing Kimi K3 (Max) at 10x lower cost!Highlights:- #1 open model, ahead of Kimi K3 (Max)- #12 overall with 1670 pts, ahead of Claude Opus 5 (High) and within ~10 pts of GPT-6 Sol (Max)- Shifts the Pareto frontier at $0.3/$1.2 per million input/output tokens- +52 pts vs. the previous DeepSeek-V4.1-Flash-20260910Congrats to the DeepSeek AI team on another strong contribution to the open source ecosystem!… more",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.80)"
+  },
+  {
+    "label": "github-security-agent-vulns",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "The GitHub Security Lab used an open-source agent to find 24 Android vulnerabilities, including a location leak in a navigation app with 10M downloads.How to run the taskflows on your own project 💡https://example.com… more",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.52)"
+  },
+  {
+    "label": "sonnet-terminal-bench",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "𝗦𝗼𝗻𝗻𝗲𝘁 𝟱.𝟱 𝘀𝗰𝗼𝗿𝗲𝘀 𝟳𝟬.𝟲% 𝗼𝗻 𝗧𝗲𝗿𝗺𝗶𝗻𝗮𝗹-𝗕𝗲𝗻𝗰𝗵. 𝗢𝗽𝘂𝘀 𝟱.𝟱 𝘀𝗰𝗼𝗿𝗲𝘀 𝟲𝟲.𝟰%. 𝗦𝗼𝗻𝗻𝗲𝘁 𝗰𝗼𝘀𝘁𝘀 𝗵𝗮𝗹𝗳 𝗮𝘀 𝗺𝘂𝗰𝗵...Last week I quoted GDPval to argue that Sonnet 5.5 gets within two points of Opus for half the price. That was knowledge work. Agent work is a different question, so I pulled the agent numbers.On Terminal-Bench 4.0, 66 containerized shell tasks, Sonnet scores 70.6% and Opus 66.4%.The cheaper model is not catching up. It is ahead by 4.2 points at half the token price. The footnote matters: Opus ran at Xhigh effort, Sonnet at a different setting, so this is not clean.Repository work reverses it. FrontierCode 1.1 has Opus at 54.4% and Sonnet at 46.2%, and CursorBench is 57.8% against 55.5%.Bounded shell work and open-ended repo work ",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.75)"
+  },
+  {
+    "label": "vector-db-not-llm-memory",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "A vector database is not an LLM memory system. It is one possible component of one.Persistent memory involves storage, retrieval, state management, context selection and evaluation.There are two main paths.Write path:Extract → Validate → Reconcile → PersistMemory records may need identity, scope, provenance, timestamps and version information. Updates must be handled without losing relevant history or retaining conflicting facts as equally current.Read path:Authorize → Lookup/Search → Select/Rank → Assemble Context → GenerateRetrieval can use SQL, keyword search, vector similarity, hybrid search or graph traversal. The choice depends on the data and access patterns.Similarity scores alone don't establish correctness, freshness or authorization.There are also several distinct mechanisms com",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.83)"
+  },
+  {
+    "label": "small-models-coding-agent-cost",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "𝗛𝗮𝗶𝗸𝘂 𝟱.𝟱 𝗮𝗻𝗱 𝗚𝗣𝗧-𝟲 𝗟𝘂𝗻𝗮 𝗰𝗼𝘀𝘁 𝘁𝗵𝗲 𝘀𝗮𝗺𝗲 𝗽𝗲𝗿 𝘁𝗼𝗸𝗲𝗻 𝘂𝗻𝘁𝗶𝗹 𝘆𝗼𝘂 𝗰𝗿𝗼𝘀𝘀 𝟭𝟬𝟬𝗞...Small models do the boring work in a coding agent: file search, log summaries, error triage.Haiku 5.5 and GPT-6 Luna both list at $0.10 per million input and $0.50 per million output, so on price alone they are identical.Then the prompt gets long. A 150K-token repository analysis costs $0.0875 on Haiku and $0.0175 on Luna, five times the bill.Haiku keeps the base rate only to 100K input tokens. Above it, input jumps to $0.50 and output to $2.50, and the higher rate covers the whole request, not just the excess. Luna holds $0.10 until 272K, then moves to $0.20 and $0.75.I found that by running both through one CometAPI key. Same prompt, two model names, one invoice, ",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.76)"
+  },
+  {
+    "label": "kiss-principle",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Keep It Simple, Stupid!KISS is a design principle built around simplicity over complexity.Most systems work best if they are kept simple.So, simplicity should be a key goal.KISS is based on the idea that simpler solutions are generally more solid, easier to understand, and less prone to errors.The principle advocates for a straightforward, minimalistic approach to design and problem-solving.Prioritize the essential features and functionalities while avoiding over-engineering.It's widely applied in various fields:+problem-solving in general+software engineering+product design+architectureKISS is a guiding principle for creating user-friendly, maintainable, and effective systems or solutions.---Ops executives: how mature is Kaizen in your organization?Here’s the assessment we use with our cl",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.54)"
+  },
+  {
+    "label": "nvidia-agent-safety-platform",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Today, with over 100 industry partners, we introduced the NVIDIA Open Agent Safety Platform, bringing together OpenShell and Sentry.Artificial intelligence is extraordinary technology that will advance discovery, productivity, security, health, and prosperity for generations to come. But its full promise can only be realized when people have confidence that AI is being built to be safe and deployed with wisdom and responsibility. NVIDIA Open Agent Safety Platform Reference Design combines NVIDIA OpenShell and NVIDIA Sentry. OpenShell is an open-source secure runtime that gives AI agents clear, enforceable boundaries. It traces their actions and enforces policy as they work. NVIDIA Sentry delivers added layer of security with hardware-based enforcement on NVIDIA BlueField, continuously moni",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.85)"
+  },
+  {
+    "label": "build-vs-buy-with-agents",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "\"We'll just build it ourselves\" is something I hear at least once a week, and I never argue (ok, maybe sometimes - I admit). But building it is genuinely the easy part now. An afternoon with an AI agent and you have something that works. I've seen it.But what I've also seen is what happens six months later: The placeholder that breaks, the plural rules that don't survive Czech, let alone Arabic. The dev who's now the accidental owner of an internal tool nobody budgeted for.Jan Novák wrote the thing I keep trying to explain in sales calls. Sharing it here in case it saves someone a painful detour.https://example.com… more",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.62)"
+  },
+  {
+    "label": "nvidia-devops-interview",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "❗ Interview Experience at Nvidia – Senior DevOps Engineer (GPU Infrastructure)Onsite. Heavy on Linux and bare metal, not just \"DevOps on managed Kubernetes.\"Round 1 – Linux, Hardware & the GPU Stack1. A node boots but never joins the cluster. From power-on, walk through what you check and in order — firmware, BMC, PXE, bootloader, initramfs, kubelet registration.2. GPU passthrough intermittently drops under load. Confirm whether the driver, the IOMMU groups, or the workload's memory pinning is at fault — without rebooting the host.3. Disk pressure alerts on a node that `df -h` shows at 40%. What's actually filling the filesystem, and how do you prove it?4. A server hangs at POST after a BIOS update. You're remote with IPMI. Recovery sequence before you call it an RMA.5. Explain NUMA topolo",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.62) / none of these (1.00)"
+  },
+  {
+    "label": "nvidia-dynamo-k8s",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Already running a model endpoint? What does it take to scale it on Kubernetes? In five minutes, we walk through how NVIDIA Dynamo handles deployment with scalable workers and an OpenAI-compatible endpoint. Watch below:… more",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.64) / none of these (1.00)"
+  },
+  {
+    "label": "agentic-dev-code-review",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "If you use agentic development properly, nobody can review all the code by hand anymore. It's simply too much.I don't read code line by line anymore, except where mistakes are really expensive: payments, security, customer data.Everything else goes through review agents. Each one has a narrow job and clear rules:1. 𝗦𝗲𝗰𝘂𝗿𝗶𝘁𝘆: checks every change against our security guidelines.2. 𝗔𝗿𝗰𝗵𝗶𝘁𝗲𝗰𝘁𝘂𝗿𝗲 𝗮𝗻𝗱 𝗰𝗼𝗱𝗲 𝗾𝘂𝗮𝗹𝗶𝘁𝘆: does the change fit the structure of the app, or does it start a second one next to it?3. 𝗨𝗜/𝗨𝗫: reviews every screen against the project's design rules and a good design skill like Impeccable.4. 𝗦𝗽𝗲𝗰 𝗮𝗻𝗱 𝘁𝗲𝘀𝘁𝘀: checks the change against the acceptance criteria, so the agent doesn't just test its own assumptions.5. 𝗗𝗮𝘁𝗮 𝗽𝗿𝗶𝘃𝗮",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.44) / none of these (1.00)"
+  },
+  {
+    "label": "k8s-requests-vs-usage",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "The cluster looks full. But the nodes are barely using any resources. 🤔How is that possible?Because Kubernetes schedules pods based on resource requests, not actual usage.Here’s what happens:→ Kubernetes checks how much CPU and memory each pod requests.→ If the requests don’t fit on a node, the scheduler won’t place the pod there.→ Even if the node has plenty of unused CPU and memory, the pod may still remain pending.This helps keep resources available when workloads need them.But there’s a catch.Oversized requests reserve capacity that applications may never use.With a few services, it might not be a big problem.Across hundreds of workloads, that unused capacity can become a serious cost.Want to check your cluster?Run: kubectl describe nodesLook at the Allocated resources section for CPU",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.81) / none of these (1.00)"
+  },
+  {
+    "label": "cicd-for-llm-apps",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Google AI Engineering interview question: How do you implement CI/CD for AI applications?With LLMs, your prompts are part of your codebase. So they need CI/CD too.Why this matters:- A prompt tweak can improve one use case while breaking another- Model upgrades often change outputs without changing your code- Every deployment should prove the AI agent still performs wellHow to implement it:- Store prompts in version control alongside your code- Maintain a benchmark dataset of representative user queriesYour CI pipeline should:- On every pull request, run the new prompt or model against the benchmark- Compare the results with the previous production versionInstead of only checking \"did it run?\", it should compare:- Answer quality- Hallucination rate- Latency- Token cost- Tool success rateSom",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.82) / none of these (1.00)"
+  },
+  {
+    "label": "coding-agent-talk",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "I'm speaking at Vercel Ship SF today. How we built ⌘ Command Code, one the most used coding agents purpose built for open models.",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.81) / none of these (1.00)"
+  },
+  {
+    "label": "engineers-writing-code-ai",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "A few weeks ago, someone found an old notetaker from the time I was an engineer! And it made me think about how engineers should think about writing code as AI takes over that task.I was so, so happy going through some of these pages. Here's one in which I was planning how to implement a Salesforce integration.I drafted most of my implementation plans by hand, shared them with a few teammates to check if there was something I was missing, and then I wrote all the code (something that I cannot imagine nowadays). I loved every part of it: the struggle, the discussions around tabs or spaces to indent the code, the bugs, the right level of abstraction to put in the code.Those were days to remember, and those days are over. For the better.I moved on to do something different (most days), and I ",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.71) / none of these (1.00)"
+  },
+  {
+    "label": "menubar-ac-app-pt",
+    "want": "YES",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Fiz um app pra controlar meu ar-condicionado pela barra de menu do MacVi o Emre Kaya mostrando no X um app desses pro ar dele e quis um pra mim. Só que os projetos que achei não tinham suporte pro LG Dual Inverter, então fiz o meu em SwiftUI.O Celsius usa a API oficial da LG ThinQ. Dá pra ligar e desligar, trocar o modo, ajustar temperatura, ventilação e swing, ligar o modo Eco e programar um timer pra desligar sozinho.Onde mais gastei tempo foi na interface. Não queria que parecesse algo vibe codado, e sim parte do macOS. Por isso usei o menu do Wi-Fi como referência: Switch pra ligar, segmented control pros modos, o material translúcido do sistema e ícones em SF Symbols.É open source e de graça. Por enquanto só funciona com ar da LG, mas aceito pull request pra outros modelos.Link do",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.86)"
+  },
+  {
+    "label": "chatgpt-77yo-plane",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Beautiful: A 77-year-old man was building a vertical farming business plan with ChatGPT on a plane. And he kept calling the AI sir 😭This might be my favourite AI adoption story of the year.He was working on financial models, cash flow projections, and a detailed business plan.At 77, he had an idea, opened ChatGPT, and started figuring out how to make it work.Meanwhile, we're still debating which generations will struggle most to adapt to AI.Turns out we're asking the wrong question.Curiosity doesn't have a retirement age.P.S. also check out How to Make Claude Limitless ♾️ (The setup, workflows, and prompts that turn one Claude plan into a full-time AI team): https://example.com… more",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.51)"
+  },
+  {
+    "label": "beatles-website-nostalgia",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "In 2000, I spent 10 minutes downloading one photo of The Beatles.In 2026, I’m building a website with Claude in 10 minutes.26 years later. Same 10 minutes. Very different possibilities.What will we be able to do in 10 minutes in 2052? 👀… more",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.43)"
+  },
+  {
+    "label": "car-ramp-pt",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Ontem eu vi um carro subir uma rampa na vertical, andar de ponta-cabeça, decolar e pousar inteiro.Não era filme. Não era inteligência artificial. Não era CGI.Elon Musk fez questão de apresentar isso ao vivo, na frente de uma plateia, justamente para ninguém dizer que era montagem.Segundo ele, o carro tem um sistema de sucção embaixo que aguenta até 2G. É isso que permite andar de cabeça para baixo. O resto veio emprestado da tecnologia de foguetes da SpaceX. A meta de aceleração é sair de zero a cem em cerca de um segundo.Mas o que mais me chamou atenção, como engenheiro, não foi o carro.Foi a lógica por trás dele.Nenhuma dessas tecnologias nasceu para um carro. A sucção vem do automobilismo. Os propulsores vêm dos foguetes. A inovação não estava em inventar algo do zero, e sim em transfer",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.59)"
+  },
+  {
+    "label": "elevator-button-placebo",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "💡 Have you ever frantically pressed an elevator button thinking it would make it arrive faster? 🧑🏻‍💻We’ve all done it. 🏃🏼‍♂️💨But no matter how many times you smash that “UP” button, the outcome doesn’t change:👉🏻 Press it once ➡️ The elevator is called.👉🏻 Press it ten times ➡️ The elevator is still just called.No duplicate elevators show up. No extra calls are made. The final state remains exactly the same.In software engineering, we call this Idempotency.🧱 What exactly is Idempotency?👉🏻 An operation is idempotent if it can be applied multiple times without changing the result beyond the initial application.👉🏻 Same request. Same result. 🎯💻 Why should you care as a Developer?In a perfect world, networks never fail and APIs always respond instantly. But in reality, networks ",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.87)"
+  },
+  {
+    "label": "recommended-for-you-widget",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Feed postRecommended for youKevin Marsh Creator partnerships at a voice AI startupFollowed by 1 shared connectionFollowMartin Fowler Author of Refactoring, hosts martinfowler.com, ThoughtworkerPeople skilled in Java also follow these peopleFollowElin Halvorsen Developer education at a frontend platform companyFollowed by 4 shared connectionsFollowShow moreChecking…",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.78)"
+  },
+  {
+    "label": "claude-code-toilet-joke-pt",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Hoje o Claude Code tá quase igual o celular na hora de fazer o número 2...Você vai pro banheiro e ele vai junto... 😂Cada vez mais o mercado vai valorizar o programador que sabe usar IA pra produzir mais, testar mais rápido e resolver problema em menos tempo.O problema começa quando você para de usar a IA como ferramenta e começa a deixar ela pensar por você.Porque se você não entende arquitetura, banco, lógica, segurança, performance e os fundamentos do que está construindo, como vai saber se o código que ela gerou presta?A IA vai deixar programador bom muito mais produtivo.Mas também vai deixar programador ruim fazendo merda numa velocidade nunca vista antes.Pra mim, o futuro não é do programador que ignora IA.E muito menos do cara que entrega tudo pra ela.É de quem sabe usar IA pra acel",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.53)"
+  },
+  {
+    "label": "layoff-story-tr",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Merhaba Dünya! Ben 12 senelik bilgisayar mühendisi olarak yapay zeka etkisi ile çalıştığım firma küçülmeye gittiği için işimden oldum. Yatırımcı olarak takip ettiğim uzmanlardan biri; \"ben bilgisayar mühendislerin işinden olmasından korkmuyorum, çünkü onlar vasıflı elemanlar ve farklı sektörlerde kendilerini gösterebilirler; asıl korktuğum vasıfsız insanların işsiz kaldıklarında ne iş yapacağı...\" lafından çok etkilendim. Aile işimiz olan işi daha kapsamlı bir şekilde geliştirdim ve example.com'u kurdum 25 Mart'ta işsiz kaldım ve şu an kendi işimi yapıyorum. Artık kendi işimde rekorları ve raporlamaları hesap ediyorum. İşimi nasıl büyütürüm veya hangi zeytinliği ve tarım alanını almam ve ekmek lazım veya hangi mahsülü ekmemiz lazım gibi farklı konuları düşünmeye başladım. Bir çok çiftç",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.44)"
+  },
+  {
+    "label": "meet-our-lead-engineer",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Meet Niklas Berglund, our lead engineer and one of the earliest people through the Ledgerly door.There's a lot of creativity in Niklas that runs well beyond the engineering, something the rest of us get the benefit of when another office party comes around, as he's deep into music.What surprised him about Ledgerly was how much people live by \"strong opinions, loosely held\". He's a good example of it himself, the kind of person you come away from a conversation with holding a better answer than you started with.Niklas's also hiring. If changing how recurring accounting work gets done, and shaping a continuously evolving product, sounds like something for you, his team is the one to be part of. Swipe through to get to know him, and get in touch if you'd like to join the journey.… more",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.50)"
+  },
+  {
+    "label": "recruitment-campaign-joke",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Best recruitment campaign for a software developer I have seen in a while. These guys know their target audience.",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.83)"
+  },
+  {
+    "label": "freelance-ai-lead-thanks",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Firstly, a big thank you to everyone who has reached out over the past 24 hours regarding the immediate-start freelance AI Lead opportunity I shared.The response has been overwhelming, and unfortunately, I haven’t been able to reply to everyone individually. I’ve already spoken with some excellent people and started moving relevant profiles through the process.I wanted to share a little more context about the project, as there are actually several opportunities available.I’m working with a major Scandinavian banking organisation on a significant AI transformation initiative, with the ambition of enabling engineers across the entire business to leverage AI and build towards greater autonomy in banking.We’re looking for 1 exceptional AI Lead and 3 highly capable AI Engineers to help drive th",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.53) / none of these (1.00)"
+  },
+  {
+    "label": "youtube-thumbnail-ad",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "YouTube thumbnail shouldn't take hours of back-and-forth just to get it right.So why is creating a thumbnail that matches your video, grabs attention, and fits your channel style still such a challenge?You have a video idea.You know the message you want to convey.But turning that idea into a thumbnail people actually want to click on is a different story.The concept doesn't feel right.A greatThe composition needs work.The design doesn't match your channel.So you start over. Again and again.That's exactly the problem Thumbish is solving.Thumbish is an AI-powered thumbnail agent that works like your virtual thumbnail designer.Instead of simply generating an image from a text prompt, Thumbish works with you throughout the creative process to help turn your ideas into thumbnails that match you",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.73) / none of these (1.00)"
+  },
+  {
+    "label": "power-protection-course",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Understanding Power System Protection — from fault detection to selective isolation.I have successfully completed Module 5 – System Protection of the Electrical Distribution Engineering Programme (EDEP), delivered by EA Technology, a City & Guilds Accredited Programme.This module covered the fundamental principles and practical applications of electrical power system protection, including:• Short-circuit calculations and fault analysis• System earthing arrangements in HV and LV distribution networks• Fuse protection, HRC fuses and protection coordination• Electromechanical induction relays and solid-state protection relays• Overcurrent protection, IDMT characteristics and time grading• Earth fault protection, including REF, SEF and Neutral Voltage Displacement (NVD)• Transformer protection",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.57) / none of these (1.00)"
+  },
+  {
+    "label": "grocery-app-tiktok",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "A grocery planning app got 8.6M views and 150K shares from one stupid simple TikTokThe interesting part is that the product is on-screen for the ENTIRE video...Here's why it went viral and how you can recreate it for your own app:1. The hook creates an instant curiosity gap\"COSTCO ARE YOU KIDDING ME???!!?\"The hook uses a recognizable retailer, an emotional reaction, and an unanswered question.People want to know what Costco did to make someone react like that.The trick here is that the video opens like someone's personal reaction, rather than a tutorial about a meal-planning app.Steal this: Lead with the situation people care about, rather than the feature you're selling.2. It stacks curiosity gaps throughout the videoThe video's actual progression:0-4s: Costco reaction hook, followed by c",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.67) / none of these (1.00)"
+  },
+  {
+    "label": "band-website-claude",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "My band released our debut album last week... and I made my first website using Claude Design! Our first album is called LUMEN (no translation needed), and I had the idea a few months ago to create a companion site for it, and make it super nostalgic:An old-school menu of treatments, lyrics (in PT and EN, for my colleagues who always ask me for translations), some PR materials, and the most fun thing: a mini-game where you unlock a funny picture of one of the band members. 😄I already wrote a super sappy post on our Instagram page about what it means to put out an album, so I'll spare my professional network and instead share the channel-appropriate content of 👉 example.com Vibecoding this wasn't as transcendental as putting out an album, but it was fun and easy and I promise ",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.87) / none of these (1.00)"
+  },
+  {
+    "label": "scrub-daddy",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "He turned an ordinary sponge into a multimillion-dollar business. 🧽Most people see a cleaning sponge as a simple commodity.Aaron Krause saw an opportunity to make it better.His invention, Scrub Daddy, looks like a smiley face. But the real innovation is inside the material.The sponge changes texture depending on water temperature:❄️ Cold water: It becomes firm for tougher scrubbing.💧 Warm water: It becomes softer for everyday cleaning.The smile-shaped design also makes it easier to grip and clean hard-to-reach areas.When Krause appeared on Shark Tank in 2012, Lori Greiner invested $200,000 for a 20% stake.The product went on to become one of the show’s most recognizable success stories, generating hundreds of millions of dollars in sales.But the most interesting lesson isn’t about the sp",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.51) / none of these (1.00)"
+  },
+  {
+    "label": "roadster-physics",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Tesla's new Roadster hung upside down on a ramp, flipped in mid air and landed on puffs of gas. Here is the engineering, with the numbers checked.1. Fans pull the air out from under the floor, and skirts seal the edges. The outside air then pins the car to the road. For a car of about 2 tonnes over about 4 m² of floor, that takes roughly 5 kPa: about 5% of normal air pressure, close to what your ears feel riding up to the CN Tower's SkyPod.2. The thrusters are cold gas: a carbon-wrapped tank of compressed air, a fast valve and a nozzle. Nothing burns. Gas goes one way, the car goes the other. That is Newton's third law, and the same trick a Falcon 9 booster uses to flip itself around.3. 0 to 60 mph in one second is 2.7 g. Tires grip at about 1 g, so the rest has to come from thrust.4. Tesl",
+    "wasAnswer": "YES",
+    "wasRaw": "ai engineer (0.76) / none of these (0.99)"
+  },
+  {
+    "label": "steve-jobs-video-pt",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Eu simplesmente amo esse vídeo! ❤️ Em 1997, um desenvolvedor confrontou Steve Jobs diante de uma plateia, questionando publicamente seus conhecimentos técnicos sobre Java e OpenDoc. A provocação foi direta: “Você não sabe do que está falando.” Jobs poderia ter reagido com arrogância, defendido suas credenciais ou tentado vencer o debate técnico. Mas fez algo muito mais inteligente. Transformou a provocação em uma verdadeira aula de Estratégia, Inovação e Liderança. Decodifiquei esse episódio em 5 lições que todo executivo deveria conhecer: 🎯 1. Excelência técnica não substitui visão estratégica. O desenvolvedor questionava a tecnologia. Jobs questionava o valor que ela criava. Conhecer profundamente uma solução não significa compreender sua relevância para o negócio. Uma solução pode ser ",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.46) / none of these (1.00)"
+  },
+  {
+    "label": "monday-mood",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Today is Monday but I feel like bing watching a thriller series of 7 seasons and be totally useless.No one told me that there's no pausing once you enter this tech game😭Anyways let me tell you random thoughtsI had the funniest experience few days ago, if you accept any connections here, you have given ppl access to traumatise you for free😆Why would you ask where I live? 😭 OmoLow-key I envy ppl that just post one sentence 🤣 The aura is auraring Anytime I see a complain about shadow-ban on any social platform, I laugh cos is it really that deep? 💁🏾‍♀️Cheers to a new week to make my back and neck pain worse🤣Fun fact: ergonomic chair wasn't made with short ppl in mindI posted an article on Medium about how to avoid migration drift with prisma, I saw a comment on this and decided to give",
+    "wasAnswer": "YES",
+    "wasRaw": "software engineer (0.55) / none of these (1.00)"
+  },
+  {
+    "label": "ai-stocks-crash",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Is this just a temporary blip or the “AI bubble” starting to crash? Yesterday's AI stocks crash:Nebius -12.18%, CoreWeave -11.91%, Super Micro -9.86%; Cerebras -10.52%, Arm -6.94%, AMD -6.00%, Intel -5.79%, Broadcom -4,52%;Western Digital -6.86%, SanDisk -6.85%, SK hynix -6.58%, Micron -5.63%. Palantir -7.22%.5-day share value change: CoreWeave -23.68%, Nebius -23.58%, Super Micro -23.51%,Cerebras -20.99%, ARM -12.67%, Intel -12.36%, SpaceX -11.29%, AMD -11.85%, SK hynix -16.89%, SanDisk -15.56%, Western Digital -15.14%, ...Will the tech market crash more next week or bounce back?Visit my profile, click [follow], then click the bell🔔, and select \"all\"Disclaimer: This post is for informational purposes only, not investment advice. Do your own research. Stock prices are highly volatile; you",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (1.00) / none of these (1.00)"
+  },
+  {
+    "label": "asml-valuation",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Europe’s most valuable company builds the machines modern AI can’t exist without.ASML is Europe’s largest listed company: $670B at the end of September, now above $700B. It is the world’s only maker of the EUV machines needed to produce the most advanced AI chips.That’s the good news. The uncomfortable part is in the same chart:Nvidia, whose chips are made on ASML machines, is worth around $5.8 trillion, roughly eight times more.In 15 of 42 European countries, the most valuable company is a bank. Europe still runs on loans, not capital markets.Meanwhile, around €10 trillion of household savings sit in low-yield accounts.Europe doesn’t lack talent or technology. ASML proves that. It lacks a capital market that doesn’t stop at national borders. That’s exactly what the EU’s Savings and Invest",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.98) / none of these (1.00)"
+  },
+  {
+    "label": "yc-founder-journey",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "2024: Moved to the West Coast with an infant. Got into YC. Raised $2.5M.2026: Building an AI startup serving 45+ customers across the US.Here's what happened in between.2024: Taking the leapI had spent nearly 9 years working as an AI engineer.I quit my job after getting exhausted by toxic work environment for new mothers.I had bigger dreams and I refused to take a break. 7months postpartum, we got accepted into Y Combinator.My husband and I packed our bags, took our baby, and moved from the East Coast to the West Coast.We went through YC, raised $2.5M, and started building full-time.I thought the hardest part was behind us.2025: Two pivots We pivoted twice.Months of building, customer conversations, and trying to figure out what people would actually pay for.Some things worked. A lot didn't.Every t",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.90)"
+  },
+  {
+    "label": "workslop-study",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Thank you very much indeed 🙄Researchers from Stanford's Social Media Lab and BetterUp Labs surveyed over 1,150 US workers. They found that 41% had received what they now call \"workslop,\" AI-generated content that looks finished but lacks the substance to actually move a task forward. Each incident took recipients almost 2 hours to sort out on average, costing an estimated $186 per worker per month, over $9 million a year for a company of 10,000 employees (!!!). It doesn't stop at wasted time either. Over half of workers who received workslop said it made them see the sender as less trustworthy, less capable, less reliable going forward. Handing off unfinished AI output isn't the same as getting real work done, even when it looks polished on the surface. Agents avoid that when someone revi",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.95) / none of these (1.00)"
+  },
+  {
+    "label": "10x-engineer-meme",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Bro was just 2 prompts away from becoming a 10x engineer.💀 The brutal truth? If your entire coding ability collapses when Claude hits its token limit, was AI building your software or building your illusion of expertise?",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.70) / none of these (1.00)"
+  },
+  {
+    "label": "nature-view",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Some views are worth waking up early for.And this is definitely one of them.Nature really knows how to put on a show, especially when nobody is around to watch.Although I think Id prefer to enjoy this one with a hot coffee and a warm jacket.#Nature #Timelapse #PhotographySource 🙏🏻 Mihai Stoica… more",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.99)"
+  },
+  {
+    "label": "wildlife-report",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "#BREAKING: The average size of monitored wildlife populations has fallen by 73% since 1970. But the Living Planet Report tells us something else, too... Elephants are growing in number in parts of southern Africa. Tigers are coming back. More green turtles are hatching. Pressure on the Atlantic and Pacific bluefin tuna is easing. None of this happened by chance. It’s the result of sustained action by people who refused to look away. This is what hope looks like in action. And if we’re going to outpace nature loss, we need more of it — from governments, businesses, investors and all of us. Because what happens next is not yet written. Share this and let’s turn hope into action for #OurLivingPlanet.Footage credit: WWF & Open Planet… more",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (1.00) / none of these (1.00)"
+  },
+  {
+    "label": "fashion-show",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "My wardrobe has eleven blue shirts. Years in finance and strategy do that to you.So I’m the last person who’d watch a fashion show. But in clips from The Arvind Store x Vikram Anand’ show on 16th October, tailors were cutting and stitching live on the runway.Somehow my mind went straight to the P&L.One pattern I noticed early in corporate finance: in most industries, the brand closest to the customer is remembered first, even when much of the craft happens further up the chain.The smartest makers find ways to step into that spotlight. Chipmakers did it with a sticker on every laptop. Fabric technology brands did it with a tag on jackets.Putting the fabric, and the process behind it, on a runway felt like a version of that move.It’s a long game. But in my experience, the value lives in being",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.97) / none of these (0.98)"
+  },
+  {
+    "label": "roadster-breaking",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "BREAKING: Tesla's Roadster just left the ground.Last night in Waco, Texas, Elon Musk unveiled the next-generation Tesla Roadster, and it flew.It leaped over a Cybertruck, Semi, Model Y and Model 3. It drove up a halfpipe, flipped upside down, spun in mid-air and landed on all four wheels.The power behind it? SpaceX rocket thrusters running on compressed air.Nine years after it was first announced, the Roadster is finally here, and it's unlike anything we've seen from a car before.Flying cars are no longer science fiction.Watch the moment it lifts off below 👇#BreakingNews #Tesla #Roadster #ElonMusk #SpaceX #Innovation… more",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (1.00) / none of these (1.00)"
+  },
+  {
+    "label": "price-of-ai-opinion",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "🏷️ The real price of AI is still unknown and human labor might outcompete AI.AI can already do images, text, video and voice - almost anything a person used to do as a paid service. Many of us consume these services every day, sometimes without knowing the result is AI-generated.So what is the problem? Isn't the economy already reshaped? Not yet. A real reshaping would mean human labor gets cheaper, because AI does the same job for less. But we don't know what using AI actually costs, so the price we see is not the price of the work.Take $20 a month for Claude Code, or $11 for ElevenLabs. These plans are heavily backed by investor money. Nobody outside these companies knows what one million tokens really costs once hosting and training are counted. A price that investors help pay shows wh",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.93)"
+  },
+  {
+    "label": "haidt-screens",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Humans are wired for deep connection, but technology is getting in the way, explains social psychologist Jonathan Haidt. In his TED Talk, he warns that kids are spending more time with screens than they are with each other — and shares how parents can protect their children in this digital age: https://example.com… more I get the concern around screens, but this all-or-nothing framing misses reality. Not every kid is a natural social butterfly who thrives in a loud playground or a crowded room.Watching my young neurodivergent son, technology hasn’t replaced connection; it has often been the exact thing that enabled it. Creative tools, shared games, and niche online spaces give quieter kids a low-pressure way to communicate, collaborate, and find their tribe without the sensory over",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.98)"
+  },
+  {
+    "label": "tech-salary-barometer",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Are your tech salaries aligned with the 2026 market? 👀The market is shifting and so is compensation.We’ve put together our Tech Salary Barometer 2026, covering 40+ tech roles across Spain and France.A few insights:🥐 Paris pays 17% more on average for mid-level profiles.📊 Salesforce shows a +36% salary premium in Paris.🎯 Spain remains highly competitive in Software Engineering & Cloud/DevOps. ⚡ AI and production experience are increasingly shaping salaries.Want the full picture? 👉 Download the full Tech Salary Barometer 2026 for free: https://example.com#TechSalaries #TechHiring #SalaryBenchmark #TalentR #TechRecruitment… more",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.96) / none of these (1.00)"
+  },
+  {
+    "label": "attention-loop-pt",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "12 a 13 horas por dia só pra apertar enter. Ninguém lê nada. Um tuíte com 8 milhões de visualizações resume o clima. O mesmo loop que domina sua atenção no Instagram à noite é quem roda seu Claude Code de dia. Estamos entrando em loops de trabalho mais intensos, com ciclos mais curtos, sem que nos deem tempo para sermos críticos com nosso próprio trabalho. \"Ninguém pensa mais\" pode ser lido como a nostalgia do extinto datilógrafo, mas é um pedido para continuar decidindo.Li \"O Conflito Evitável\" em 2008 e reli essa semana. O último conto de Eu, Robô parece o manual do nosso feed, do nosso agentic loop. A máquina sabe o que você vai dar like. E até o que você não vai gostar. Quem projeta a tecnologia sequestra nossas mentes como um caça-níqueis.Na história de Asimov, a inteligência artifici",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.94)"
+  },
+  {
+    "label": "hamas-anniversary-sv",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Idag är det tre år sen Hamas attack i Israel 🖤 Tre år sen över 1 000 människor i Israel dödades och 251 personer togs som gisslan. Tre år sen Israels våld mot palestinier eskalerade till ett folkmord i Gaza. Tre år där Israel har dödat tiotusentals palestinier och utsatt befolkningen för tvångsfördrivning, svält och förhållanden som avser att förinta palestinier i Gaza.… more",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (1.00) / war (0.79)"
+  },
+  {
+    "label": "meeting-obama-pt",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "A honra de uma vida.Poder conhecer o Obama foi extraordinário, e é um marco histórico na minha vida e carreira. Estava muito entusiasmado para o conhecer, e foi tudo aquilo que imaginei. Uma presença, um carisma e uma energia fantástica. Mas sobretudo, um nível de sabedoria, liderança e humanidade que o mundo muito precisa. Que privilégio. Antes deste momento, estava numa sala privada com os 30 maiores CEOs em Portugal, e de certa forma a olhar à volta e a pensar como tinha vindo parar aqui. Tudo isto é surreal para mim. Sinto-me mesmo abençoado por ter a sorte de viver momentos como este.Obrigado aos Gamechangers pela oportunidade de uma vida e ao Tiago Ferreira Lopes por ter criado este movimento. E obrigado ao Presidente Barack Obama pelo privilégio de ter este momento com ele.It was an ",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.99) / politics (0.66)"
+  },
+  {
+    "label": "election-quadrant-pt",
+    "want": "NO",
+    "interests": "ai engineer, software engineer, SDLC.",
+    "avoid": "politics, war",
+    "text": "Onde você acha que eu tô nesse quadrante?vamo ver se o cêis me conhecem bem mesmo. 🤔Joga aí nos comentários!Ah, e se você não votou no 1º turno, ou votou em branco porque \"não se identifica com nenhum lado\", esse teste é pra você mesmo. Ele é rapidão. Coisinha de 2 a 3 minutos.- vi ele no IG, fiz e achei tão legal que mandei pra minha família e agora tô trazendo aqui pro cêis.É um autoconhecimento que às vezes a gente nem tem. Digo isso usando minha família como exemplo.Nenhum político encaixara 100% com os nossos valores. Votar em um não nos tira o direito de reclamar de seu governo, de cobrar, de discordar. Só que, a cada 4 anos, um deles precisa nos representar. E entender onde os valores que a gente defende se encaixam, no fim do dia, não faz mal nenhum. 👉 no melhor dos casos você vo",
+    "wasAnswer": "NO",
+    "wasRaw": "something else (0.99) / none of these (0.80)"
+  }
+]

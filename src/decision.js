@@ -67,6 +67,18 @@ export const DEFAULT_OPTIONS = {
   gate: KIND_GATE,
 };
 
+// The parts of DEFAULT_OPTIONS the popup lets the reader edit. Blank fields
+// keep the shipped default; keeping every kind turns the gate off.
+export function customOptions({ instructions, otherDescription, keepKinds } = {}) {
+  const keep = keepKinds?.length ? keepKinds : KIND_GATE.keep;
+  return {
+    ...DEFAULT_OPTIONS,
+    instructions: instructions?.trim() || DEFAULT_OPTIONS.instructions,
+    otherDescription: otherDescription?.trim() || DEFAULT_OPTIONS.otherDescription,
+    gate: keep.length >= KIND_GATE.options.length ? null : { ...KIND_GATE, keep },
+  };
+}
+
 // Posts styled with Unicode "mathematical bold" letters (𝗦𝗼𝗻𝗻𝗲𝘁) tokenize as
 // garbage; NFKC folds them back to plain letters. Also collapses whitespace.
 export function cleanText(text) {

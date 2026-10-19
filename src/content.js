@@ -1,4 +1,4 @@
-import { buildQuestions, buildState, cleanText, judge } from "./decision.js";
+import { buildQuestions, buildState, cleanText, customOptions, judge } from "./decision.js";
 import { matchJunkRule } from "./junk-filter.js";
 import {
   PROCESSED_ATTR,
@@ -18,8 +18,10 @@ const DEFAULTS = {
   mode: "off", // 'off' | 'filter' | 'block'
   interests: "",
   avoid: "politics, war",
+  custom: {}, // see customOptions() in decision.js
 };
-const STATS_DEFAULT = { shown: 0, hidden: 0 };
+// `rules` counts the hidden posts a junk rule caught without a model call.
+const STATS_DEFAULT = { shown: 0, hidden: 0, rules: 0 };
 const LOG_DEFAULT = [];
 const LOG_LIMIT = 50;
 
@@ -61,7 +63,7 @@ function getConfig() {
 const DEBUG_LOG_KEY = "lif-debug-log";
 const FLUSH_DELAY_MS = 1500;
 
-let pendingStats = { shown: 0, hidden: 0 };
+let pendingStats = { ...STATS_DEFAULT };
 let pendingLog = [];
 let pendingDebug = [];
 let flushTimer = null;
@@ -78,7 +80,7 @@ async function flush() {
   const stats = pendingStats;
   const logEntries = pendingLog;
   const debugEntries = pendingDebug;
-  pendingStats = { shown: 0, hidden: 0 };
+  pendingStats = { ...STATS_DEFAULT };
   pendingLog = [];
   pendingDebug = [];
 
@@ -107,9 +109,12 @@ async function flush() {
     const stored = await ext.storage.local.get({ lifStats: STATS_DEFAULT, lifLog: LOG_DEFAULT });
     const next = {};
     if (dirtyStats) {
+      const s = stored.lifStats;
       next.lifStats = {
-        shown: stored.lifStats.shown + stats.shown,
-        hidden: stored.lifStats.hidden + stats.hidden,
+        ...s,
+        shown: s.shown + stats.shown,
+        hidden: s.hidden + stats.hidden,
+        rules: (s.rules || 0) + stats.rules,
       };
     }
     if (logEntries.length) {
@@ -153,7 +158,7 @@ window.addEventListener("pagehide", flush);
 function ensureModel() {
   if (modelReady) return Promise.resolve();
   if (modelLoading) return modelLoading;
-  setStatus("loading", "Starting model…");
+  setStatus("loading", "Loading the model…");
   debugLog("engine:start", {});
   modelLoading = ext.runtime
     .sendMessage({ lifEnsureModel: true })
@@ -163,7 +168,7 @@ function ensureModel() {
         throw new Error(r?.error || "model did not start");
       }
       modelReady = true;
-      setStatus("ready", "Model loaded, filtering posts");
+      setStatus("ready", "Model ready, filtering posts");
       debugLog("engine:ready", { runtime: r.runtime, loadMs: r.loadMs });
     })
     // Reset on rejection too, or a dead message port would pin every later
@@ -191,6 +196,13 @@ function extractText(post) {
     : post.textContent;
   // Drop a high surrogate left dangling by the cut, or the logged JSON breaks.
   return cleanText(text).slice(0, TEXT_CAP).replace(/[\ud800-\udbff]$/, "");
+}
+
+// judge() reasons ("avoid: war", "gate: joke or meme (0.91)") as bar text.
+function hideReason(reason) {
+  if (reason.startsWith("avoid: ")) return `about ${reason.slice(7)}`;
+  if (reason.startsWith("gate: ")) return `kind is ${reason.slice(6).replace(/ \([\d.]+\)$/, "")}`;
+  return "not about your topics";
 }
 
 const verdictCache = new Map(); // post text -> { answer, raw, reason }
@@ -227,12 +239,13 @@ async function classify(post) {
   if (junkRule) {
     settleVeil(post);
     processedCount++;
-    hidePost(post);
+    hidePost(post, junkRule === "promoted" ? "promoted" : `matched the ${junkRule} rule`);
     bumpStat("hidden");
+    bumpStat("rules");
     debugLog("classify:junk-rule", { rule: junkRule });
     appendLog({
       interests: config.interests,
-      systemPrompt: `(no model call — matched junk rule "${junkRule}")`,
+      systemPrompt: `(no model call: matched junk rule "${junkRule}")`,
       junkRule,
       text,
       rawOutput: "",
@@ -245,8 +258,9 @@ async function classify(post) {
     return;
   }
 
-  const questions = buildQuestions(config.interests, config.avoid);
-  const systemPrompt = questions.map((q) => `${q.instructions} [${(q.options ?? []).join(" | ")}]`).join(" + ");
+  const opts = customOptions(config.custom);
+  const questions = buildQuestions(config.interests, config.avoid, opts);
+  const systemPrompt = questions.map((q) => `${q.instructions} [${(q.options ?? []).join(" | ")}]`).join("\n");
   const cached = verdictCache.get(text);
   if (!cached) await ensureModel();
 
@@ -261,7 +275,7 @@ async function classify(post) {
 
   if (!cached) {
     const startedAt = performance.now();
-    const r = await decide(buildState(text), questions);
+    const r = await decide(buildState(text, opts), questions);
     latencyMs = Math.round(performance.now() - startedAt);
 
     if (activeMode !== "filter") {
@@ -269,7 +283,7 @@ async function classify(post) {
       return;
     }
 
-    verdict = judge(config.interests, r.answers);
+    verdict = judge(config.interests, r.answers, opts);
     verdictCache.set(text, verdict);
   } else {
     debugLog("classify:cache-hit", {});
@@ -280,7 +294,7 @@ async function classify(post) {
   processedCount++;
 
   const hidden = answer === "NO";
-  if (hidden) hidePost(post);
+  if (hidden) hidePost(post, hideReason(reason));
   else revealPost(post); // lift the veil now that it passed
   bumpStat(hidden ? "hidden" : "shown");
 
@@ -502,11 +516,11 @@ async function applyMode(mode, force = false) {
   if (mode === "block") {
     startObserving(onFoundFor("block"));
   } else if (mode === "filter" && config.interests.trim()) {
-    await setStatus("idle", "Watching feed");
+    await setStatus("idle", "Watching the feed");
     scanForPosts(document.body);
     startObserving(onFoundFor("filter"));
   } else if (mode === "filter") {
-    await setStatus("idle", "Add interests to start filtering");
+    await setStatus("idle", "Add your interests to start filtering");
   } else {
     await setStatus("idle", "Off");
   }
@@ -531,13 +545,14 @@ async function main() {
   ext.storage.onChanged.addListener((changes) => {
     if (changes.interests) config.interests = changes.interests.newValue;
     if (changes.avoid) config.avoid = changes.avoid.newValue;
+    if (changes.custom) config.custom = changes.custom.newValue || {};
     if (changes.mode) {
       config.mode = changes.mode.newValue;
       // An explicit re-selection of block mode overrides an earlier
       // "show feed for this session" dismissal.
       if (config.mode === "block") sessionStorage.removeItem(DISMISS_KEY);
     }
-    if (changes.mode || ((changes.interests || changes.avoid) && config.mode === "filter")) {
+    if (changes.mode || ((changes.interests || changes.avoid || changes.custom) && config.mode === "filter")) {
       applyMode(config.mode, true);
     }
   });

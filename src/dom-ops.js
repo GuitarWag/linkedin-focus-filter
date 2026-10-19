@@ -55,7 +55,8 @@ function unveil(post) {
   delete post.dataset.lifPrevPosition;
 }
 
-export function hidePost(post) {
+// `why` finishes "Hidden by Focus Filter: ..." on the collapsed bar.
+export function hidePost(post, why = "not about your topics") {
   if (post.dataset[PROCESSED_ATTR] === "hidden") return;
   unveil(post); // drop the "Checking…" state before collapsing
   post.dataset[PROCESSED_ATTR] = "hidden";
@@ -70,7 +71,9 @@ export function hidePost(post) {
   bar.style.cssText =
     "padding:10px 16px;font:13px -apple-system,sans-serif;color:#666;display:flex;" +
     "align-items:center;justify-content:space-between;border-bottom:1px solid #e0e0e0;";
-  bar.innerHTML = `<span>Filtered by Focus Filter (not in your interests)</span>`;
+  const label = document.createElement("span");
+  label.textContent = `Hidden by Focus Filter: ${why}`;
+  bar.appendChild(label);
   const btn = document.createElement("button");
   btn.textContent = "Show";
   btn.style.cssText =

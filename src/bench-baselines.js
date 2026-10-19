@@ -1,5 +1,5 @@
 // Scores the non-model baselines against the corpus. No model, no GPU, no
-// browser — runs in node so "is the model worth it?" can be re-checked cheaply
+// browser; runs in node so "is the model worth it?" can be re-checked cheaply
 // whenever the corpus grows.
 //
 //   npm run bench:baselines

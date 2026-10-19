@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Focus Filter — Activity Log</title>
+    <title>Focus Filter Activity Log</title>
     <style>
       body { font: 13px -apple-system, sans-serif; max-width: 760px; margin: 20px auto; color: #1a1a1a; }
       h1 { font-size: 16px; }
@@ -17,6 +17,14 @@
       .time { color: #aaa; font-size: 11px; flex: none; text-align: right; }
       .latency { color: #aaa; font-size: 11px; }
       #empty { color: #888; padding: 20px 0; }
+      .note { color: #777; margin: -6px 0 12px; }
+      #breakdown { display: flex; gap: 24px; margin-bottom: 18px; }
+      #breakdown > div { flex: 1; min-width: 0; }
+      #breakdown h2 { font-size: 11px; text-transform: uppercase; color: #888; margin: 0 0 6px; font-weight: 600; }
+      #breakdown ul { list-style: none; margin: 0; padding: 0; }
+      #breakdown li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+      #breakdown li span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      #breakdown li span:last-child { color: #888; flex: none; }
       #clear { margin-bottom: 10px; }
 
       #stats { display: flex; gap: 20px; padding: 14px 0; border-bottom: 1px solid #eee; margin-bottom: 4px; }
@@ -59,17 +67,22 @@
     </style>
   </head>
   <body>
-    <h1>Focus Filter — Activity Log</h1>
+    <h1>Focus Filter activity log</h1>
+    <p class="note">The last 50 posts the filter checked. Click a row to see the questions, the post text and the model's answers.</p>
     <button id="clear">Clear log</button>
 
     <div id="stats">
-      <div class="stat"><div class="num" id="statTotal">0</div><div class="label">Classified</div></div>
+      <div class="stat"><div class="num" id="statTotal">0</div><div class="label">Checked</div></div>
       <div class="stat hidden"><div class="num" id="statHiddenPct">0%</div><div class="label">Hidden</div></div>
       <div class="stat shown"><div class="num" id="statShownPct">0%</div><div class="label">Shown</div></div>
-      <div class="stat"><div class="num" id="statLatency">0ms</div><div class="label">Avg latency</div></div>
+      <div class="stat"><div class="num" id="statLatency">0ms</div><div class="label">Avg model time</div></div>
     </div>
     <div id="ratioBar"></div>
     <div id="timeline"></div>
+    <div id="breakdown">
+      <div><h2>Why posts were hidden</h2><ul id="hiddenWhy"></ul></div>
+      <div><h2>Shown, by topic</h2><ul id="shownTopics"></ul></div>
+    </div>
 
     <div id="evalBar">
       <button id="exportEval" type="button" disabled>Export eval set</button>
@@ -77,10 +90,10 @@
       <p id="evalNote"></p>
     </div>
     <p class="hint" style="color:#888;font-size:11px;margin:0 0 10px;">
-      Use ✓ / ✗ on a row to say whether the verdict was right — ✗ records the
-      opposite as the wanted answer. Then Export saves
-      <code>corpus-extra.json</code>; move it into the project's
-      <code>test/</code> folder and the benchmarks pick it up automatically.
+      Mark each verdict with ✓ (right) or ✗ (wrong). A ✗ records the opposite
+      verdict as the wanted answer. Export saves <code>corpus-extra.json</code>.
+      Put it in the project's <code>test/</code> folder and <code>npm run eval</code>
+      uses it. The file holds other people's posts, so remove names and links before you share it.
     </p>
 
     <div id="list"></div>
