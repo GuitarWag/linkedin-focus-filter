@@ -12,9 +12,10 @@ for (const f of ["popup.html", "popup.js", "log.html", "log.js", "offscreen.html
   fs.copyFileSync(`src/${f}`, `dist/${f}`);
 }
 
-// Only the shipped model goes in; assets/models also holds Llama for the eval.
-fs.rmSync("dist/models", { recursive: true, force: true });
-fs.cpSync("assets/models/onnx-community", "dist/models/onnx-community", { recursive: true });
+// 330 MB, so skip the copy once a previous build placed it (rm -r dist to redo).
+if (!fs.existsSync("dist/models/onnx-community")) {
+  fs.cpSync("assets/models/onnx-community", "dist/models/onnx-community", { recursive: true });
+}
 
 // ONNX Runtime's WebAssembly build, served from the extension instead of a CDN.
 fs.rmSync("dist/ort", { recursive: true, force: true });
